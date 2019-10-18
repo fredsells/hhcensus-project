@@ -1,0 +1,277 @@
+{% extends 'webapp/base.html' %}
+
+
+{% block content %}
+<body width="90%">
+
+<script type="text/javascript">
+//var current_unit='G1';
+var page_loaded = false;
+
+function something_changed(item){
+	var row = $(item).closest("tr");
+	console.log("changed " +$(row).attr("id"));
+	$(row).attr("data-changed", "Yes")
+}
+
+
+
+function inbed_changed(inbed) {
+	var suffix = inbed.id.substring(5);
+	var reasonid = '#reason'+suffix;
+	var commentid = '#comment' + suffix;
+	//var suffix = id.subsstring(5);
+	var disabled = inbed.value!='No';
+	//console.log("inbed changed "+ inbed.name+" " + inbed.value +" "+ reasonid);
+	$(reasonid).prop("disabled", disabled).val('');
+	$(commentid).prop("disabled", disabled).val('');
+	something_changed(inbed);
+}
+
+function get_errors(data){
+	var errors = [];
+	/*			
+			switch (inbed) {
+				case '':
+					error = "InBed is Blank for "+name;
+					break;
+				case 'No':
+					if (reason=='' || typeof reason == 'undefined') {
+						error = "InBed is NO but No Reason for "+name;
+					}
+					break;
+				case 'Yes':
+					comment = '';  //overkill but play it safe
+					reason = '';
+			};  //--------------------end switch
+			if (typeof error !== 'undefined'){
+				errors.push(error);
+				console.log(error);
+			}else {
+*/			
+				
+	return errors
+}
+
+function validate_form() {
+	var unit = $( "#unit-picker" ).val();
+	var patients = [];
+	$("#bedcheck > tr[data-changed='Yes']").each( function(){  //if no person in bed, data-changed remains "No"
+				var inbed = $(this).find(".inbed").children("option:selected").val();
+				var changes = {};
+				changes.id = this.id;
+				changes.name = $(this).find(".name").text();  //just to help in debugging, not used
+				changes.inbed = inbed;
+				changes.reason=$(this).find(".reason").children("option:selected").val();
+				changes.comment=$(this).find(".comment").val();
+				console.log(changes);
+				patients.push(changes);
+			
+		
+	});
+	if (patients.length==0){
+			alert("no changes to save");
+			return true;
+		}
+	$.ajax({
+      type: "POST",
+      url: "save_changes",
+      contentType: 'application/json; charset=utf-8',
+	  dataType: "json",
+      processData: false,      
+	  data: JSON.stringify({unit:unit, patients:patients} ),
+      success: function (jsonresponse) {  
+		console.log(jsonresponse);
+		console.log(jsonresponse['unit']);
+	    x = JSON.stringify(jsonresponse)     ; 
+		console.log('ajax success ');
+		console.log(x);
+		console.log(x.unit);
+		console.log(x['unit']);
+		//location.reload(true);
+		location.href="census_edit?unit="+unit+"&dummy="+Date()+'"';//dont use date, need to prevent cache
+      },
+	  failure: function(errMsg) { alert(errMsg);}
+    });
+}
+
+ $( function() {
+		//setTimeout("timout()", 60000 * 5);		
+		console.log("started");
+		page_loaded = true;
+      
+   }); //-------------------end init
+		
+function timout()	{
+		location.href = "{% url 'webapp:logout' %}"
+	}
+	
+function logout() {
+	if (confirm("Are you sure you want to logout")) {
+		location.href = "{% url 'webapp:logout' %}"
+	} else {
+	} 
+}
+
+	
+ function select_unit(unit) {  
+	//if (page_loaded) {
+	//window.current_unit = unit;
+	location.href = "census_edit?unit="+unit;
+	//}
+}
+
+
+		
+</script>
+
+<table id="heading"  cellpadding="5">
+<tbody>
+<tr>
+	<td>
+		<table width="90%" class="pageHeader">
+		<tbody><tr>
+			<td>
+				Census Tracking
+			</td>
+			
+			<td align="center">
+				Hello, frederick.sells@hebrewhome.org
+				&nbsp;&nbsp;
+				</td>
+				<td align="center">
+				<input type="button" id="SubmitButton" name="SubmitButton" value="Logout" class="round_button"
+				onclick="logout()">
+				
+			</td>
+			
+		</tr>
+		</tbody>
+		</table>
+	</td>
+</tr>
+</tbody>
+</table> <!-- end heading -->
+
+	
+	
+
+
+<table>
+	
+		
+<tbody>
+<tr>
+	
+	<td>
+		<table>
+		<tbody><tr>
+			<td class="frm_label">
+				Date:
+			</td>
+			<td>
+				<div class="big-black-box">
+					<nobr>{{sweepdate}}</nobr>
+				</div>
+			</td>
+		
+		</tr><tr>
+			<td class="frm_label">
+				Unit: 
+			</td>
+			<td>
+				<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
+					{% for item in units %}
+						<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
+					{% endfor %}
+				</select>
+
+			<button class="round_button" onclick="validate_form()"> Save Changes </button>
+
+			<span class="ErrorMessage"></span>
+			</td>
+		</tr>
+		
+		
+		</tbody>
+		</table>
+		
+
+
+<table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">
+<thead>
+<tr style="font-weight:bold;background-color:#ECA927" class="tableHeader">	
+	<td>&nbsp;</td>
+	<td>Room</td>
+	<td>Name</td>
+	<td>Resident#</td>
+	<td>Gender</td>
+	<td align="right">Admit&nbsp;Date</td>
+	<td>Status</td>
+	<td align="center">LOC</td>
+	<td align="center">YesNo</td>
+	<td>Reason</td>
+	<td>Comments</td>
+	<td>Updated&nbsp;By</td>
+	<td align="right">Updated&nbsp;Time</td>
+	
+</tr>
+</thead>
+<tbody id="bedcheck">
+{% for bed in beds %}
+	<tr id="{{bed.id}}" data-changed="No"> 
+
+		<td> {{ forloop.counter }}  {{bed.id}}</td> 
+	
+	
+		<td> {{bed.room}}/{{bed.bed}}</td>
+		{% if bed.lastname != None %}
+			<td class="name">{{bed.lastname}}, {{bed.firstname}}</td>
+			<td class="mrn"> {{bed.mrn}}</td>
+			<td class="{{bed.gender}}"> {{bed.gender}}</td>
+			<td> {{bed.CurrentAdmitDate}}</td>
+			<td> {{bed.CensusStatus}}</td>
+			<td> {{bed.LevelOfCare}}</td>
+			<td>
+			<select class="inbed" id="inbed{{bed.id}}" name="inbed{{bed.id}}" onchange="inbed_changed(this)">
+					{% for item in inbed_choices %}
+						<option value="{{item.1}}" 
+						{% if item.1 == bed.inbed %}selected="selected"{% endif %}>
+						{{item.1}}
+						</option>
+					{% endfor %}
+			</select>
+			</td>
+			<td> 
+			<select class="reason"  id="reason{{bed.id}}" name="reason{{bed.id}}" onchange="something_changed(this)">
+					{% for item in reason_choices %}
+						<option value="{{item.1}}" 
+						{% if item.1 == bed.reason %}selected="selected"{% endif %}>
+						{{item.1}}
+						</option>
+					{% endfor %}
+			</select>
+			</td>
+			<td> <input class="comment" type="textfield" id="comment{{bed.id}}" name="comment{{bed.id}}" value="{{bed.comments}}" onchange="something_changed(this)"> </td>
+			<td> {{bed.updatedby|default_if_none:""}}</td>
+			<td> {{bed.updatetime|date:'Y-m-d H:i'}}</td>
+			
+			
+		{% endif %}
+	</tr>
+{% endfor %}
+
+
+
+</tbody></table>
+
+
+
+	</td>
+</tr>
+</tbody></table>
+
+
+
+</body>
+{% endblock %}
