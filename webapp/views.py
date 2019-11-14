@@ -6,14 +6,15 @@ Created on Jul 7, 2019
 
 import json
 import sys, os, datetime, random
+from dateutil.relativedelta import relativedelta
+import calendar
+
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
-from django.db.models import Count, Max, Avg
+from django.db.models import Count, Max, Avg, Sum, F
 from django.db.models.functions import Lower
-from django.db.models import Sum
-from django.db.models import F
 from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -21,12 +22,15 @@ from django.views.decorators.cache import never_cache, cache_control
 #from django.contrib.auth.decorators import login_required
 
 
+
 import django.db.models.functions as x
 from django.contrib.auth.decorators import permission_required
 
 
 from .models import BedCheck, INBED_CHOICES, REASON_CHOICES
+from webapp import logic_census
 from setuptools._vendor.six import _urllib_request_moved_attributes, _meth_self
+
 
 DEFAULT_UNIT = 'G1'
 
@@ -51,9 +55,6 @@ def get_beds(unit='G1', obsolete=0, date=None):
     queryset = BedCheck.objects.filter(Obsolete=obsolete, unit=unit).order_by('unit', 'room', 'bed')
     return queryset
     
-def get_units( obsolete=0, date=None): 
-    units = BedCheck.objects.filter(Obsolete=obsolete).order_by('unit').values_list('unit', flat=True).distinct()
-    return units
      
 def logout(request):
     return render(request, 'webapp/logout.html', {})    
@@ -69,13 +70,26 @@ def _update_bed(change, user, now):
     errors = bed.save()
     print(errors)
     return True
-    
+
+def get_totals_by_unit(date):
+    beds = BedCheck.objects.filter(SweepTime__date=date, inbed='YES').order_by('unit', 'room', 'bed')
+    totals = beds.values('unit').annotate(total=Count('unit')).order_by('unit')
+    results = dict()
+    for total in totals:
+        results[total['unit']]=total['total']
+    return results
+
 def census_tracking(request):
-    date = request.GET.get("date", datetime.date.today())    
-    beds = BedCheck.objects.filter(unit='G1').exclude(lastname=None, inbed='Yes').order_by('unit', 'room', 'bed')
-    beds = beds[30:40] #todo remove this
-    context = dict(date=date, beds=beds)
-    print(context)
+    date = request.GET.get("date", None) 
+    if date:
+        date = datetime.datetime.strptime(date, '%m/%d/%Y')
+    else:
+        date = datetime.date.today()
+    beds = BedCheck.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(lastname=None).order_by('unit', 'room', 'bed')
+    beds = beds##[30:40] #todo remove this
+    totals_by_unit = get_totals_by_unit(date)
+    pairs = totals_by_unit.items()
+    context = dict(date=date, beds=beds, totals=pairs)
     return render(request, 'webapp/censustracking.html', context)
         
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
@@ -91,7 +105,7 @@ def census_edit(request):
         maxdate = datetime.date.today()
         context = dict(user='frederick.sells', 
                        unit=unit, 
-                       units=get_units(),
+                       units=logic_census.get_units(),
                        inbed_choices = INBED_CHOICES, 
                        reason_choices = REASON_CHOICES,
                        beds=beds, 
@@ -123,4 +137,22 @@ def save_changes(request):
         else:
             return HttpResponse('request was not json', request)
     
-
+def monthly_summary(request):
+    units=logic_census.get_units()
+    this_month = datetime.date.today().replace(day=1)
+    months = [ this_month-relativedelta(months=i) for i in range(12)]
+    startdate = request.GET.get('start', None)
+    if startdate:
+        startdate = datetime.datetime.strptime(startdate, '%Y-%m-%d').date()
+    else:
+        startdate = this_month
+    ndays = calendar.monthrange(startdate.year, startdate.month)[1]
+    enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
+    print('daterange', startdate, enddate, ndays)
+    errors = logic_census.get_errors_by_day_and_unit(startdate, enddate)
+    totals = logic_census.get_error_summary(units, startdate, enddate)
+    context = dict(months=months, selectedmonth=startdate, errors=errors, units=units, totals=totals)
+    
+    return render(request, 'webapp/month_summary.html', context)
+    
+    

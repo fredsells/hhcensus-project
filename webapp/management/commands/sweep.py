@@ -25,22 +25,24 @@ class Command(BaseCommand):
     def fake_user_input(self, hhdb, nos=0, blanks=0):
         hhdb.mark_current_inbed_yes()
         if blanks==0 and nos==0: return 
-        beds = models.BedCheck.objects.filter(Obsolete=0).order_by('unit', 'room', 'bed')
-        for i, bed in enumerate(beds):
-            print (i, bed)
-            if i < nos:
-                bed.inbed='No'
-                bed.reason = random.choice(models.REASON_CHOICES)[0]
-                bed.updatedby = 'fredtesting'
-                bed.updatetime=datetime.datetime.now()
-                bed.save()
-            elif i < nos+blanks:
-                bed.updatedby = 'fredtesting'
-                bed.updatetime=datetime.datetime.now()
-                bed.inbed = ''
-                bed.save()
-            else:
-                break
+        for unit in ['G1', 'G2', 'S2']:
+            beds = models.BedCheck.objects.filter(Obsolete=0, unit=unit).order_by('room')
+            for i, bed in enumerate(beds):
+                if i<3: continue
+                print (i, bed)
+                if i < nos:
+                    bed.inbed='No'
+                    bed.reason = random.choice(models.REASON_CHOICES)[0]
+                    bed.updatedby = 'fredtesting'
+                    bed.updatetime=datetime.datetime.now()
+                    bed.save()
+                elif i < nos+blanks:
+                    bed.updatedby = 'fredtesting'
+                    bed.updatetime=datetime.datetime.now()
+                    bed.inbed = ''
+                    bed.save()
+                else:
+                    break
                 
         
 

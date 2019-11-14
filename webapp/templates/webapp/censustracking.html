@@ -36,7 +36,7 @@ function timout()	{
 	//if (page_loaded) {
 	var x = $(".datepicker").val();
 	console.log('onchange '+x);
-//	location.href = "census_tracking?date="+x;
+	location.href = "census_tracking?date="+x;
 	//}
 }
 
@@ -52,11 +52,12 @@ function printthis() {
 <div id="top"  >
 
 <div class="datepicker"  ></div>
-
+<div style="height:20px;"> </div>
 	
-<p id="datepicked"> {{date}} </p>
+<span  class="big-black-box" id="datepicked"> {{date}} </span>
 
-<button class="round_button" onclick=printthis()> Print </button>
+<button class="round_button" onclick="window.print()"> Print </button>
+<div style="height:40px;"> </div>
 
 </div>
 
@@ -90,24 +91,34 @@ function printthis() {
 			<td> {{bed.CensusStatus}}</td>
 			<td> {{bed.LevelOfCare}}</td>
 		
-			<td class="{{bed.gender}}"> {{bed.gender}}</td>
-			<td> {{bed.CurrentAdmitDate}}</td>
+			<td align="center" class="{{bed.gender}}"> {{bed.gender}}</td>
+			<td> {{bed.CurrentAdmitDate|date:'Y/m/d'}}</td>
 		
-			<td> {{bed.reason}}</td>
-			<td> {{bed.comment}} </td>			
+			<td> {{bed.reason|default_if_none:""}}</td>
+			<td> {{bed.comment|default_if_none:""}}  </td>			
 		
 	</tr>
 {% endfor %}
 </tbody></table>
 
-<table id="summary">
-<tbody>
-	<tr>
-	
 
+<p>
+<table  border="1">
+<tbody>
+	
+	<tr>
+	<td>Unit</td>
+	{% for pair in totals%}
+		<td>{{pair.0}}</td>
+	{%endfor%}
 	</tr>
 	<tr>
+	<td>Occupancy</td>
+	{% for pair in totals%}
+		<td>{{pair.1}}</td>
+	{%endfor%}
 	</tr>
+
 </tbody>
 </table>
 

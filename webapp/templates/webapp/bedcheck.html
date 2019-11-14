@@ -8,23 +8,52 @@
 //var current_unit='G1';
 var page_loaded = false;
 
+ $( function() {
+		//setTimeout("timout()", 60000 * 5);		
+		console.log("started");
+		page_loaded = true;
+			$("#bedcheck > tr.occupied").each( function(){  //if no person in bed, data-changed remains "No"
+				var inbed = $(this).find(".inbed").children("option:selected").val();
+				var changes = {};
+				changes.id = this.id;
+				changes.name = $(this).find(".name").text();  //just to help in debugging, not used
+				changes.inbed = inbed;
+				changes.disabled = inbed === "Yes";
+				changes.type = typeof inbed;
+				//changes.reason=$(this).find(".reason").children("option:selected").val();
+				//changes.comment=$(this).find(".comment").val();
+				disable_reason_and_comments(changes.id, changes.disabled);
+				//console.log(changes);
+				
+			
+		
+	});
+      
+   }); //-------------------end init
+		
+
 function something_changed(item){
 	var row = $(item).closest("tr");
 	console.log("changed " +$(row).attr("id"));
 	$(row).attr("data-changed", "Yes")
 }
 
+function disable_reason_and_comments(suffix, disabled){
+	var reasonid = '#reason'+suffix;
+	var commentid = '#comment' + suffix;	
+	$(reasonid).prop("disabled", disabled).val('');
+	$(commentid).prop("disabled", disabled).val('');
+}
+
 
 
 function inbed_changed(inbed) {
 	var suffix = inbed.id.substring(5);
-	var reasonid = '#reason'+suffix;
-	var commentid = '#comment' + suffix;
+
 	//var suffix = id.subsstring(5);
 	var disabled = inbed.value!='No';
 	//console.log("inbed changed "+ inbed.name+" " + inbed.value +" "+ reasonid);
-	$(reasonid).prop("disabled", disabled).val('');
-	$(commentid).prop("disabled", disabled).val('');
+	disable_reason_and_comments(suffix, disabled);
 	something_changed(inbed);
 }
 
@@ -95,13 +124,7 @@ function validate_form() {
     });
 }
 
- $( function() {
-		//setTimeout("timout()", 60000 * 5);		
-		console.log("started");
-		page_loaded = true;
-      
-   }); //-------------------end init
-		
+
 function timout()	{
 		location.href = "{% url 'webapp:logout' %}"
 	}
@@ -135,13 +158,9 @@ function logout() {
 				Census Tracking
 			</td>
 			
-			<td align="center">
-				Hello, frederick.sells@hebrewhome.org
-				&nbsp;&nbsp;
-				</td>
+			<td align="center">		Hello, ??need to setup user login to get name ??</td>
 				<td align="center">
-				<input type="button" id="SubmitButton" name="SubmitButton" value="Logout" class="round_button"
-				onclick="logout()">
+				<input type="button" id="SubmitButton" name="SubmitButton" value="Logout" class="round_button"	onclick="logout()">
 				
 			</td>
 			
@@ -175,21 +194,21 @@ function logout() {
 				</div>
 			</td>
 		
-		</tr><tr>
-			<td class="frm_label">
-				Unit: 
-			</td>
+		</tr>
+		<tr>
+			<td class="frm_label">	Unit:	</td>
 			<td>
 				<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
 					{% for item in units %}
 						<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
 					{% endfor %}
 				</select>
-
-			<button class="round_button" onclick="validate_form()"> Save Changes </button>
-
-			<span class="ErrorMessage"></span>
 			</td>
+			<td><button class="round_button" onclick="validate_form()"> Save Changes </button> </td>
+			<td style="width:20px;"> </td>
+			<td><button class="round_button" onclick="window.print()">Print </button></td>
+
+			<td><span class="ErrorMessage"></span>	</td>
 		</tr>
 		
 		
@@ -219,9 +238,14 @@ function logout() {
 </thead>
 <tbody id="bedcheck">
 {% for bed in beds %}
-	<tr id="{{bed.id}}" data-changed="No"> 
+	<tr id="{{bed.id}}" data-changed="No"  {% if bed.lastname != None %}
+												class="occupied"
+											{% else %}
+												class="not-occupied"
+											{% endif %}
+											> 
 
-		<td> {{ forloop.counter }}  {{bed.id}}</td> 
+		<td> {{ forloop.counter }} </td> 
 	
 	
 		<td> {{bed.room}}/{{bed.bed}}</td>

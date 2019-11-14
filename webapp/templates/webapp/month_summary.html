@@ -1,0 +1,92 @@
+{% extends 'webapp/base.html' %}
+
+
+{% block content %}
+ {% load app_filters %} 
+<body width="90%">
+
+<script type="text/javascript">
+ $( function() {
+		//setTimeout("timout()", 60000 * 5);		
+		console.log("started");
+
+    $("#selectmonth").change(function(){
+		console.log("gothere");
+        var yyyy_mm_dd = $(this).children("option:selected").val();
+		location.href  = "monthly_summary?start="+yyyy_mm_dd ;
+        //alert("You have selected the date - " + yyyy_mm_dd);
+
+    });	
+      
+   }); //-------------------end init
+
+
+		
+function timout()	{
+		location.href = "{% url 'webapp:logout' %}"
+	}
+	
+
+
+		
+</script>
+<h1 class="big-black-box"> Census Monthly Summary </h1>
+
+<div id="top"  >
+	<select id="selectmonth">
+			{% for item in months %}
+				<option value="{{item|date:'Y-m-d'}}" 
+				{% if item == selectedmonth %}selected="selected"{% endif %}>
+				{{item|date:'F Y'}}
+				</option>
+			{% endfor %}
+	</select>
+
+
+<button class="round_button" onclick="window.print()"> Print </button>
+
+</div>
+
+	
+		
+		
+
+
+<table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">
+<thead>
+<tr style="font-weight:bold;background-color:#ECA927" class="tableHeader">	
+	<td>Weekday</td>
+	<td>Date</td>
+	{% for unit in units %}
+		<td>{{unit}}</td>
+	{%endfor%}
+</tr>
+</thead>
+<tbody id="bedcheck">
+{% for item in errors %}
+	<tr> 
+		<td>{{item.date|date:'l'}}</td>
+		<td> {{item.date|date:'n/j/Y'}}</td>
+		{% for unit in units %}
+			<td>{{item|lookup:unit|default_if_none:"" }}</td>
+		{%endfor%}		
+	</tr>
+{% endfor %}
+
+	<tr class="empty-transparent-row"> <td  class="empty-transparent-row"<div style="background-color:black;"></div></td> </tr>
+	
+	{% for total in totals %}
+	<tr >
+		
+		<td>{{total|lookup:'title'}}</td>
+		<td>{{total|lookup:'total'}}</td>
+		{% for unit in units %}
+			<td>{{total|lookup:unit}}</td>
+		{% endfor %}
+	</tr>
+	{%endfor%}
+	
+
+
+</body>
+{% endblock %}

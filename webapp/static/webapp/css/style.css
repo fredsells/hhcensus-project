@@ -72,6 +72,12 @@ the following css is to use a table for form layout.
   font-size: 14px;
 }
 
+.empty-transparent-row {
+	border: solid 0px;
+	opacity = 0.0;
+	line-height: 14px;
+}
+
 /********************************************************************
 the following css was removed from inline style in original pages
 to simplity the html and make pages consistent.

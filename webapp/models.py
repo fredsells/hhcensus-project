@@ -37,7 +37,7 @@ class BedCheck(models.Model):
     CurrentAdmitDate = models.DateTimeField( null=True)
     CensusStatus = models.CharField(max_length=30, null=True)
     SweepTime = models.DateTimeField()
-    Obsolete = models.IntegerField(default = 0)
+    Obsolete = models.IntegerField(default = 0, db_column='obsolete')
     gender = models.CharField(max_length=1, null=True)
     LevelOfCare = models.CharField(max_length=20, null=True)
     inbed = models.CharField(max_length=6, null=True, blank=True, default='',choices=INBED_CHOICES, verbose_name='inbed')
@@ -55,5 +55,5 @@ class BedCheck(models.Model):
 
     class Meta:
         db_table = 'bedcheck'
-        managed = True
+        managed = False
 
