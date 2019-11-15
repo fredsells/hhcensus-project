@@ -71,14 +71,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 #  r'DRIVER={SQL Server Native Client 10.0};'
 #         r'SERVER=.\SQLEXPRESS;'
 #         r'DATABASE=HHBedCheck;'
 #          r'Trusted_Connection=yes;'
-DATABASES = {
+
+
+
+LOCAL_SQLEXPRESS_DB = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'HHBedCheck',
@@ -92,6 +94,21 @@ DATABASES = {
         },  
     }
 
+HHDEV_DEPLOYED_ON_SAME_SERVER = {
+    'default': {
+        'ENGINE': 'sql_server.pyodbc',
+        'HOST': 'localhost', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+        'PORT': '', #'1433',
+        'NAME': 'FredTesting',
+        'Trusted_Connection': 'yes;',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 11 for SQL Server',
+            'unicode_results': True,
+        },
+    },
+}
+
+DATABASES = LOCAL_SQLEXPRESS_DB
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
