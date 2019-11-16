@@ -1,15 +1,20 @@
 
 import pyodbc
 
-conn_str = (
+LAPTOP_SQLEXPRESS = (
         r'DRIVER={SQL Server Native Client 10.0};'
         r'SERVER=.\SQLEXPRESS;'
         r'DATABASE=HHBedCheck;'
         r'Trusted_Connection=yes;'
-   #     r'UID=django;'
-   #     r'PWD=django;'
     )
+
+HH_DEV = (r'DRIVER={SQL Server};'
+                r'SERVER=HHSWLSQLDEV01;'
+                r'DATABASE=FredTesting;'
+                r'Trusted_Connection=yes;'    )
   
+conn_str = LAPTOP_SQLEXPRESS
+
 
 class HHDB(object):
     def __init__(self):
