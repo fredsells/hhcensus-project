@@ -22,11 +22,12 @@ var page_loaded = false;
 				changes.type = typeof inbed;
 				//changes.reason=$(this).find(".reason").children("option:selected").val();
 				//changes.comment=$(this).find(".comment").val();
-				disable_reason_and_comments(changes.id, changes.disabled);
-				//console.log(changes);
-				
-			
-		
+				if (changes.disabled) {
+					$(this).find(".reason").prop("disabled", changes.disabled);
+					$(this).find(".comment").prop("disabled", changes.disabled);
+				}
+				console.log(changes)
+
 	});
       
    }); //-------------------end init
@@ -40,9 +41,15 @@ function something_changed(item){
 
 function disable_reason_and_comments(suffix, disabled){
 	var reasonid = '#reason'+suffix;
-	var commentid = '#comment' + suffix;	
-	$(reasonid).prop("disabled", disabled).val('');
-	$(commentid).prop("disabled", disabled).val('');
+	var commentid = '#comment' + suffix;
+	if(disabled){
+		$(reasonid).prop("disabled", disabled);
+		$(commentid).prop("disabled", disabled);
+		
+	}else{	
+		$(reasonid).prop("disabled", disabled).val('');
+		$(commentid).prop("disabled", disabled).val('');
+	};
 }
 
 
@@ -267,7 +274,7 @@ function logout() {
 			</select>
 			</td>
 			<td> 
-			<select class="reason"  id="reason{{bed.id}}" name="reason{{bed.id}}" onchange="something_changed(this)">
+			<select class="reason"  id="reason{{bed.id}}" name="reason{{bed.id}}" onchange="something_changed(this)" autocomplete="off">
 					{% for item in reason_choices %}
 						<option value="{{item.1}}" 
 						{% if item.1 == bed.reason %}selected="selected"{% endif %}>
@@ -276,7 +283,8 @@ function logout() {
 					{% endfor %}
 			</select>
 			</td>
-			<td> <input class="comment" type="textfield" id="comment{{bed.id}}" name="comment{{bed.id}}" value="{{bed.comments}}" onchange="something_changed(this)"> </td>
+			<td> <input class="comment" type="textfield" id="comment{{bed.id}}" name="comment{{bed.id}}" value="{{bed.comment}}" 
+			autocomplete="off" onchange="something_changed(this)"/> </td>
 			<td> {{bed.updatedby|default_if_none:""}}</td>
 			<td> {{bed.updatetime|date:'Y-m-d H:i'}}</td>
 			
