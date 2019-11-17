@@ -71,6 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 #  r'DRIVER={SQL Server Native Client 10.0};'
