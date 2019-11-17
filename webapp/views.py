@@ -118,22 +118,23 @@ def save_changes(request):
         user = 'fredtest'
         now = datetime.datetime.now()
         if request.is_ajax(): 
-            print ('got ajax')
-            print ('Raw Data:', request.body)
             data = json.loads(request.body.decode("UTF-8"))
             print('json data', data)
             unit = data.get('unit', 'xxx' )
-            print(unit, 'unit')
             patients = data.get('patients', [])
             for p in patients: 
-                x = MyObject(p)
-                _update_bed(x, user, now)
+                print('p', p)
+                bed = BedCheck.objects.get(pk=p['id'])
+                bed.inbed=p['inbed']
+                bed.reason=p['reason']
+                bed.comment=p['comment']
+                bed.updatedby = user
+                bed.updatetime=now
+                bed.save(update_fields=['inbed', 'reason', 'comment', 'updatedby', 'updatetime'])
+                print('saved', bed.id, bed.reason, bed.comment, bed.inbed, bed.lastname)
 
             context = {'comment': 'update successful'}
             return JsonResponse(context)
-            #return render(request, 'webapp/home.html', context)
-            #return redirect('home')
-            #return render(request, 'webapp:home.html', context)
         else:
             return HttpResponse('request was not json', request)
     
