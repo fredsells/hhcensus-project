@@ -9,11 +9,13 @@ body {
 }
 
 
+table {
+	border: 1px solid black;
+}
 
 
 
-
-.round_button {
+.nav-bar button {
 	background-color: blue;
   border: 1px solid black;
   color: white;
@@ -24,7 +26,7 @@ body {
   font-size: 16px;
   font-weight: bold;
   margin: 1px;
-	border-radius: 5%;
+	border-radius: 10%;
  }
 
  #filter_bar button{
@@ -112,4 +114,49 @@ select:disabled{
 #top {
 	width: 50%;
     margin: 0 auto;
+}
+
+H2 {
+	background-color: blue;
+	margin: 20 auto;
+	display:block;
+	color: white;
+	font-size:24px;
+	padding: 5px;
+	font-weight: bold;
+	text-align:center;
+	align:center;
+	
+}
+
+.center-div
+{
+     margin: 0 auto;
+     width: 100px; 
+	padding: 10px;
+}
+
+.popup-overlay {
+	visibility:hidden;
+	border:2px solid black;
+}
+
+.popup-content {
+	visibility:hidden;
+	border:2px solid black;
+}
+
+.popup-overlay.active{
+	visibility:visible;
+	border:2px solid black;
+}
+
+.popup-content.active {
+	visibility:visible;
+	border:2px solid black;
+
+}
+
+.dialog {
+	display: inline-block;
 }

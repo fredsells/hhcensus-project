@@ -7,8 +7,6 @@ import datetime
 import random
 from django.core.management.base import BaseCommand, CommandError
 
-ONE_HOUR = datetime.timedelta(hours=1)
-
 from webapp  import models
 
 from . import mydata_api 
@@ -27,34 +25,24 @@ class Command(BaseCommand):
     def fake_user_input(self, hhdb, nos=0, blanks=0):
         hhdb.mark_current_inbed_yes()
         if blanks==0 and nos==0: return 
-        for unit in ['G1', 'G2', 'S2']:
-            beds = models.PositiveCensusReport.objects.filter(Obsolete=0, Unit=unit).order_by('room')
-            for i, bed in enumerate(beds):
-                if i<3: continue
-                print (i, bed)
-                if i < nos:
-                    bed.inbed='No'
-                    bed.reason = random.choice(models.REASON_CHOICES)[0]
-                    bed.updatedby = 'fredtesting'
-                    bed.updatetime=datetime.datetime.now()
-                    bed.save()
-                elif i < nos+blanks:
-                    bed.updatedby = 'fredtesting'
-                    
-                    bed.updatetime=datetime.datetime.now()
-                    bed.inbed = ''
-                    bed.save()
-                else:
-                    break
+        beds = models.BedCheck.objects.filter(Obsolete=0).order_by('unit', 'room', 'bed')
+        for i, bed in enumerate(beds):
+            print (i, bed)
+            if i < nos:
+                bed.inbed='No'
+                bed.reason = random.choice(models.REASON_CHOICES)[0]
+                bed.updatedby = 'fredtesting'
+                bed.updatetime=datetime.datetime.now()
+                bed.save()
+            elif i < nos+blanks:
+                bed.updatedby = 'fredtesting'
+                bed.updatetime=datetime.datetime.now()
+                bed.inbed = ''
+                bed.save()
+            else:
+                break
                 
-    def reformat(self, row):
-        print('row', row)
-        unit, room, bed, resident_number, patient_id, lastname, firstname, admitdatetime, status, sweepdatetime, dummy, gender, loc = row
-        #rep_date = datetime.datetime.strptime(sweepdatetime, '%m/%d/%Y %H%M %A')
-        rep_date = sweepdatetime + ONE_HOUR
-        newrow = unit, '{}/{}'.format(room, bed), resident_number, '{} {}'.format(lastname, firstname), status, loc, gender, admitdatetime, rep_date
-        print ('new', newrow)
-        return newrow
+        
 
     def handle(self, *args, **options):
         fake_input = options['fakeinput']
@@ -68,11 +56,8 @@ class Command(BaseCommand):
             sweeptime = firstday + datetime.timedelta(days=n)
             texttime = sweeptime.strftime('%m/%d/%Y') + almost_midnight
             beds = mydata.get_beds_x_patients( texttime)
-            header = beds.pop(0)
-            print (header)
-            beds = [ self.reformat(bed) for bed in beds]
+            #for b in beds: print (b)
             hhdb.insert_bed_occupancy(beds)
-            continue
             if fake_input:
                 self.fake_user_input(hhdb, nos=3, blanks=2)
             print ('sweeptime={} nrecords={}'.format( texttime, len(beds)))

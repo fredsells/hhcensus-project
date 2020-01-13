@@ -1,0 +1,151 @@
+{% extends 'webapp/base.html' %}
+
+
+{% block content %}
+<body style="width: 960px; height: 100%; margin-top: 100px">
+
+<script type="text/javascript">
+//var current_unit='G1';
+
+$(document).ready( function() {
+		//setTimeout("timout()", 60000 * 5);		
+		console.log("started");
+		var page_loaded = false;
+		PersonDialog = $( "#xxxShowPatientPicker" ).dialog({ 	modal:true,
+                             								position:'center',
+                             								height:400,
+															width:400,
+															autoOpen: false 
+														});
+														
+		
+
+ $( ".delete-action" ).click(function() {
+    	    $( "#delete" ).dialog( "open" );
+        });
+
+
+	$("#census-action").change(function(e){
+		var action = $(this).val();
+		var url = "?action=" + action;
+		console.log("select event type " + url);
+		location.href = url;
+		
+	});	
+      
+}); //-------------------end init
+		
+
+
+
+function showPatientPicker(){
+	console.log("show patient picker ");
+	 $( "#delete" ).dialog( "open" );
+
+}
+
+
+
+
+		
+</script>
+
+
+
+
+<div class="center-div" style="width:100%;">
+
+<H2>Census Notification Form </H2>
+<select name="event" id="census-action" style="display:block;margin:auto;">
+	<option value="0" selected="selected" >Select a census type . . .</option>
+	<option value="admit">Admission</option>
+	<option value="Room">Room Change</option>
+	<option value="ToHospital">Out to Hospital</option>
+	<option value="FromHospital">Return from Hospital</option>
+	<option value="LoA">Out to Leave of Absence</option>
+	<option value="Return">Return from Leave of Absence</option>
+	<option value="Discharge">Discharge</option>
+	<option value="Expired">Death</option>
+
+</select>
+
+<p> {{ action }}</p>
+
+{% if action %}
+
+    
+
+
+<form method="POST" action="notifications">
+   
+
+<table width="100%" style="background-color: #E7E7E7; margin: 30px 0px 5px 0px">
+        <tbody>
+
+<!--
+		<tr>
+            <td align="right">
+				<button id="#ShowPatientPicker" onclick="showPatientPicker();">Show Patients</button> 
+				 First Name      
+			</td>
+            <td >{{form.firstname}}</td>
+            <td align="right">  Last Name  </td>
+            <td align="left"> {{form.lastname}}    </td>
+        </tr>
+
+        <tr></tr>
+
+        <tr>
+            <td  align="right">Admission Date</td>
+            <td ><input class='datepicker' name="event_date"  id="event_date" required > </td>
+            <td align="right">            Time			</td>
+			<td>			<input type="time" id="event_time" name="event_time" required>            </td>
+            
+        </tr>
+   
+        <tr>
+        	<td align="right">Level of Care </td>
+        	<td > <select name="ddlLC" id="ddlLC" class="pnlLoA" repeatdirection="Vertical">
+					<option value="Select a level of Care...">Select a level of Care...</option>
+					<option value="Post Acute">Post Acute</option>
+					<option value="Memory Care">Memory Care</option>
+					<option value="Nursing">Nursing</option>
+					<option value="JR Nursing">JR Nursing</option>
+					<option value="JR Enriched">JR Enriched</option>
+					<option value="ALP">ALP</option>
+				
+				</select>
+			</td>
+            <td align="right">Admitted From</td>
+			<td> <input required> </td>
+         </tr>
+        <tr>
+        	<td align="right">Room </td>
+        	<td ></td>
+            <td align="right"></td>
+			<td>  </td>
+         </tr>
+
+
+		<tr>
+			<td/>
+			<td align="right"> <input type="submit" name="btnSubmit" value="Submit"  id="btnSubmit" class="round_button"></td>
+			<td align="right"> Date Entry by </td>
+			<td> {{user}}</td>
+		</tr>
+                                   
+-->                                         
+
+          </tbody>
+</table>
+</form>
+{% endif %} <!-- if action ---------------------------------- -->
+</div>
+
+
+
+{% include "./dialog01popup.html" %}    
+
+
+   </body>
+{% endblock %}

@@ -8,12 +8,19 @@ LAPTOP_SQLEXPRESS = (
         r'Trusted_Connection=yes;'
     )
 
+LAPTOP_SQL= (
+        r'DRIVER={SQL Server};'
+        r'SERVER=.;'
+        r'DATABASE=HHdev;'
+        r'Trusted_Connection=yes;'
+    )
+
 HH_DEV = (r'DRIVER={SQL Server};'
                 r'SERVER=HHSWLSQLDEV01;'
                 r'DATABASE=FredTesting;'
                 r'Trusted_Connection=yes;'    )
   
-conn_str = LAPTOP_SQLEXPRESS
+conn_str = LAPTOP_SQL
 
 
 class HHDB(object):
@@ -26,13 +33,13 @@ class HHDB(object):
     def insert_bed_occupancy(self, data):
         Cursor = self.Connection.cursor()
         Cursor.execute('SET IDENTITY_INSERT dbo.bedcheck OFF')
-        Cursor.execute('UPDATE dbo.bedcheck SET Obsolete=1')
+        Cursor.execute('UPDATE dbo.PositiveCensusReport SET Obsolete=1')
         self.Connection.commit()
-    
-        data = data[1:] #drop header row
-        sql = '''INSERT INTO dbo.bedcheck (Unit, Room, Bed, MRN, PatientID,  lastname, firstname
-                , CurrentAdmitDate, CensusStatus, SweepTime, Obsolete, gender, LevelOfCare)
-                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+        print(type(data))
+        print('\n\ninsert', data[0])
+        sql = '''INSERT INTO dbo.PositiveCensusReport 
+                (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, OrigAdmitDate, RepDate, Obsolete)
+                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)'''
         Cursor.executemany(sql, data)
         self.Connection.commit()
         Cursor.close()

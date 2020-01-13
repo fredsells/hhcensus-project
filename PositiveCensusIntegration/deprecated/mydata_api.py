@@ -16,10 +16,10 @@ RiverSpringProduction = ( #this works w/o opening any VPN, etc.
 SQL = '''
 SET NOCOUNT ON
   
-DECLARE @SWEEPDATETIME DATETIME 
+DECLARE @SWEEPDATETIME DATETIME = GETDATE()
  --SELECT  @SWEEPDATETIME
  
-set @SWEEPDATETIME = CONVERT(DATETIME, '{}', 101)
+--set @SWEEPDATETIME = CONVERT(DATETIME, '{}', 101)
 
 DECLARE @BedsTbl TABLE (
       BedId INTEGER
@@ -59,7 +59,7 @@ DECLARE @LastPatientEventTbl TABLE(
       PatientID INTEGER
     , lastname VARCHAR(50)
     , firstname VARCHAR(50)
-    , Gender CHAR(1)
+    , gender CHAR(1)
     , RoomNumber VARCHAR(151)
     , MRN VARCHAR(9)
     , CurrentAdmitDt DATETIME
@@ -106,7 +106,7 @@ LEFT JOIN STVSNF.Census_LevelOfCare AS loctype on x.LOC = loctype.LOCID and pc.F
 
 
 SELECT UnitName, beds.RoomName, beds.BedName, MRN, PatientID,  lastname, firstname
-    , CurrentAdmitDt, CensusStatus, @SWEEPDATETIME, 0, Gender, LOCDescription
+    , CurrentAdmitDt, CensusStatus, @SWEEPDATETIME, 0, gender, LOCDescription
 FROM @BedsTbl AS beds
 LEFT JOIN @LastPatientEventTbl AS pat ON beds.BedId=pat.LastCensusBedID
 ORDER BY UnitName, RoomName, BedName
@@ -132,8 +132,8 @@ class MyDataQueryManager(object):
         records = cursor.fetchall()  
         return [names] + records
          
-    def get_beds_x_patients(self, sweeptime):
-        sql = SQL.format(sweeptime)
+    def get_beds_x_patients(self):
+        sql = SQL
         records = self.get_something(sql)
         return records
     
@@ -143,9 +143,10 @@ class MyDataQueryManager(object):
         
 def unittest():
     mydata = MyDataQueryManager()
+    sweeptime = datetime.datetime.now()
     records = mydata.get_beds_x_patients()
     for p in records: print('bex_patient', p) 
     print ('mydata_api unittest done')
         
 if __name__ == '__main__':
-    unittest()        
+    unittest()

@@ -14,6 +14,7 @@ from django.db.models.functions import Lower
 from django.db import connection
 
 from webapp import models
+from webapp import utilities
 from setuptools._vendor.six import _meth_self
 
 
@@ -21,7 +22,7 @@ DEBUG = False
 ONEDAY = datetime.timedelta(days=1)
 
 def get_units( obsolete=0, date=None): 
-    units = models.BedCheck.objects.filter(Obsolete=obsolete).order_by('unit').values_list('unit', flat=True).distinct()
+    units = models.PositiveCensusReport.objects.filter(Obsolete=obsolete).order_by('unit').values_list('unit', flat=True).distinct()
     return list(units)
 
 
@@ -29,7 +30,7 @@ def get_errors_by_day_and_unit(startdate, enddate):
     results = []
     date = startdate
     while date <= enddate:
-        totals = models.BedCheck.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(inbed='NO', reason='').values('unit').annotate(total=Count('SweepTime'))
+        totals = models.PositiveCensusReport.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(inbed='NO', reason='').values('unit').annotate(total=Count('SweepTime'))
         errors = dict(date=date)
         for total in totals:
             errors[total['unit']]=total['total']
@@ -42,7 +43,7 @@ def get_error_summary(units, startdate, enddate):
     ndays = enddate-startdate
     ndays = 1+ndays.days
     print(startdate, enddate, ndays)
-    census = models.BedCheck.objects.filter(SweepTime__date__range=[startdate, enddate]).exclude(mrn='')
+    census = models.PositiveCensusReport.objects.filter(SweepTime__date__range=[startdate, enddate]).exclude(mrn='')
     partial_census = dict(zip(units,[0]*len(units)))
     full_census = dict(zip(units,[0]*len(units)))
     totals = dict(zip(units,[ndays]*len(units)))
@@ -83,6 +84,8 @@ def get_error_summary(units, startdate, enddate):
 
 
 def count_days_with_errors(units, ndays, errors):
+    return []
+'''
     counter = dict(zip(units, [0]*len(units)))
     full = None
     for unit in units:
@@ -109,3 +112,9 @@ def count_days_with_errors(units, ndays, errors):
     
     #print ('totals', results)
     return results # a list of all units where first entry is unit name and second entry is dictionary of YES/NO/Blank counts
+'''
+#############################################################################################
+#@utilities.record_elapsed_time
+# def get_all_patients():
+#     patients = models.mydataPatients.objects.all().order_by('LastName', 'FirstName').values()
+#     return patients

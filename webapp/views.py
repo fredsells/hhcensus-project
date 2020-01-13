@@ -20,6 +20,8 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache, cache_control
 #from django.contrib.auth.decorators import login_required
+from setuptools._vendor.six import _urllib_request_moved_attributes, _meth_self
+
 
 
 
@@ -27,9 +29,11 @@ import django.db.models.functions as x
 from django.contrib.auth.decorators import permission_required
 
 
-from .models import BedCheck, INBED_CHOICES, REASON_CHOICES
+from .models import PositiveCensusReport, INBED_CHOICES, REASON_CHOICES
 from webapp import logic_census
-from setuptools._vendor.six import _urllib_request_moved_attributes, _meth_self
+from webapp import sql_api 
+from webapp import forms
+
 
 
 DEFAULT_UNIT = 'G1'
@@ -52,7 +56,7 @@ def home(request):
         
 
 def get_beds(unit='G1', obsolete=0, date=None):
-    queryset = BedCheck.objects.filter(Obsolete=obsolete, unit=unit).order_by('unit', 'room', 'bed')
+    queryset = PositiveCensusReport.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
     return queryset
     
      
@@ -60,7 +64,7 @@ def logout(request):
     return render(request, 'webapp/logout.html', {})    
 
 def _update_bed(change, user, now):
-    bed = BedCheck.objects.get(pk=change.id)
+    bed = PositiveCensusReport.objects.get(pk=change.id)
     print (bed)
     bed.inbed=change.inbed
     bed.reason=change.reason
@@ -72,7 +76,7 @@ def _update_bed(change, user, now):
     return True
 
 def get_totals_by_unit(date):
-    beds = BedCheck.objects.filter(SweepTime__date=date, inbed='YES').order_by('unit', 'room', 'bed')
+    beds = PositiveCensusReport.objects.filter(SweepTime__date=date, inbed='YES').order_by('unit', 'room', 'bed')
     totals = beds.values('unit').annotate(total=Count('unit')).order_by('unit')
     results = dict()
     for total in totals:
@@ -85,7 +89,7 @@ def census_tracking(request):
         date = datetime.datetime.strptime(date, '%m/%d/%Y')
     else:
         date = datetime.date.today()
-    beds = BedCheck.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(lastname=None).order_by('unit', 'room', 'bed')
+    beds = PositiveCensusReport.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(lastname=None).order_by('unit', 'room', 'bed')
     beds = beds##[30:40] #todo remove this
     totals_by_unit = get_totals_by_unit(date)
     pairs = totals_by_unit.items()
@@ -95,7 +99,7 @@ def census_tracking(request):
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
     if request.method=='GET':
-        unit = request.GET.get('unit', DEFAULT_UNIT)
+        unit = request.GET.get('Unit', DEFAULT_UNIT)
         print ('processing GET for', unit)
         beds = get_beds(unit)
         for bed in beds:
@@ -112,6 +116,7 @@ def census_edit(request):
                        sweepdate = maxdate.strftime('%A -  %B %#d, %Y'))
         x = render(request, 'webapp/bedcheck.html', context)
         return x
+    
 
 @csrf_exempt
 def save_changes(request):
@@ -124,7 +129,7 @@ def save_changes(request):
             patients = data.get('patients', [])
             for p in patients: 
                 print('p', p)
-                bed = BedCheck.objects.get(pk=p['id'])
+                bed = PositiveCensusReport.objects.get(pk=p['id'])
                 bed.inbed=p['inbed']
                 bed.reason=p['reason']
                 bed.comment=p['comment']
@@ -157,3 +162,29 @@ def monthly_summary(request):
     return render(request, 'webapp/month_summary.html', context)
     
     
+###############################################################################################
+
+def notifications(request):
+    TEMPLATE = 'webapp/testform.html'
+    Database = sql_api.DatabaseQueryManager()
+    context = dict(user='frederick.sells')
+    FORM_CLASS = forms.CensusChangeForm
+    
+    if request.method == 'POST':
+        return render(request, TEMPLATE)
+#         form = form_class(request.POST)
+#         if form.is_valid():
+#             pass  # does nothing, just trigger the validation
+#             print('posting form', form)
+    else:
+        print('processing GET', request)
+        action = request.GET.get('action', '0')
+#         if action == None:
+#             return render(request, TEMPLATE)
+        form = FORM_CLASS(initial={'action': action})
+        #print(form)
+        #form.Action = action
+
+        context = dict(form=form, action=action)
+        print(context.keys() )
+        return render(request, TEMPLATE, context)

@@ -95,21 +95,35 @@ LOCAL_SQLEXPRESS_DB = {
         },  
     }
 
-HHDEV_DEPLOYED_ON_SAME_SERVER = {
+HHARSWLSQLDEV01 = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'HOST': 'localhost', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+        'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
         'PORT': '', #'1433',
-        'NAME': 'FredTesting',
+        'NAME': 'HHdev',
         'Trusted_Connection': 'yes;',
         'OPTIONS': {
-            'driver': 'ODBC Driver 11 for SQL Server',
+            'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
             'unicode_results': True,
         },
     },
 }
 
-DATABASES = LOCAL_SQLEXPRESS_DB
+LAPTOP = {
+    'default': {
+        'ENGINE': 'sql_server.pyodbc',
+        'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+        'PORT': '', #'1433',
+        'NAME': 'FredTesting',
+        'Trusted_Connection': 'yes;',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
+            'unicode_results': True,
+        },
+    },
+}
+
+DATABASES = LAPTOP
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

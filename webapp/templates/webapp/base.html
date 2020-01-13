@@ -4,15 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>HH Census</title>
-
-		<script	  src="{% static "webapp/js/jquery.js"  %}"></script>
+  <title>HH Census</title>
+  
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'webapp/css/style.css' %}">
 		
-		<script src="{% static "webapp/js/jquery-ui.js"  %}"> </script>
 		
-		<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/jquery-ui.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/jquery-ui.structure.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/style.css' %}">
 <style type="text/css">
 
 
@@ -73,8 +72,7 @@ select, textarea {
 }
 
 
-.TableAlteringRows
-{
+.TableAlteringRows {
 	font-size: 12px;
 }
 
@@ -115,18 +113,24 @@ TD {
     background: white;
     border: 0px ;
 }
+
+.ui-widget-header,.ui-state-default, ui-button{
+            background:#b9cd6d;
+            border: 1px solid #b9cd6d;
+            color: #FFFFFF;
+            font-weight: bold;
+         	}
 </style>
 
 
 <script>
-      $( function() {
-      	$( ".dobpicker" ).datepicker({
-      									yearRange: "-100:+0",
-      									changeYear: true
-      								});
-//      	$( ".datepicker" ).datepicker();
+  $( function() {
+      	$( ".dobpicker" ).datepicker({yearRange: "-100:+0",	changeYear: true});
+      	$( ".datepicker" ).datepicker();
+      	$( ".datepicker" ).datepicker();
 
-      });
+       
+ });
 </script>
 
     </head>

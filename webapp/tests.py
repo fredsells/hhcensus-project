@@ -1,5 +1,5 @@
 from django.test import TestCase
-from webapp.models import BedCheck
+from webapp.models import PositiveCensusReport
 
 
 class CensusLogicCase(TestCase):
