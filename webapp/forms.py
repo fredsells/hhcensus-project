@@ -9,6 +9,7 @@ from django.forms import ModelForm
 from webapp import models 
 from webapp import sql_api
 from webapp.constants import *
+from hhcensus import settings
 
 UNUSED_FIELDS = {None: ['firstname', 'lastname', 'date', 'time','oldloc', 'oldbed', 'dischargeto', 'admitfrom', 'newloc', 'newbed'],
                  ADMISSION:['oldloc', 'oldbed', 'dischargeto'],
@@ -47,10 +48,10 @@ class CensusChangeForm(forms.Form):
     action = forms.ChoiceField(label='Select Census Event', choices=CHOICES.Actions, initial='0')
     firstname = forms.CharField(max_length=30,label='First Name')
     lastname  = forms.CharField(max_length=30)
-    date      = forms.DateField(label="Date:", widget=forms.TextInput(attrs={'class': "datepicker"}))
+    date      = forms.DateField(label="Date:", input_formats=settings.DATE_INPUT_FORMATS, widget=forms.TextInput(attrs={'class': "datepicker"}))
     time      = forms.TimeField(label="Time:")
-    oldbed = forms.ChoiceField(label='From Bed', choices=CHOICES.Beds)
-    newbed = forms.ChoiceField(label='Into Bed', choices=CHOICES.Beds)
+    oldbed = forms.ChoiceField(label='From Room', choices=CHOICES.Beds)
+    newbed = forms.ChoiceField(label='To Room', choices=CHOICES.Beds)
     newloc = forms.ChoiceField(label='Level of Care', choices=CHOICES.LevelOfCare)
     oldloc = forms.ChoiceField(label='Prior Level of Care', choices=CHOICES.LevelOfCare)
     admitfrom = forms.ChoiceField(label='Admitted From', choices=CHOICES.AdmittedFrom)

@@ -11,7 +11,7 @@ RETURN_FROM_HOSPITAL = 'Return from Hospital'
 OUT_TO_LEAVE_OF_ABSENCE = 'Out to Leave of Absence'
 RETURN_FROM_LEAVE_OF_ABSENCE ='Return from Leave of Absence'
 DISCHARGE = 'Discharge'
-DEATH = 'Death'
+DEATH = 'Deceased'
 
 
 #['firstname', 'lastname', 'date', 'time','oldloc', 'oldbed', 'dischargeto', 'admitfrom', 'newloc', 'newbed'],

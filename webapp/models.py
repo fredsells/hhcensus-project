@@ -10,13 +10,14 @@ import os
 from django.db import connection
 
 from webapp import utilities
+from hhcensus import settings
 
 def ooooooooooooooooooooooooooooooooooooget_all_patients_from_mydata():
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM dbo.mydataPatient ORDER BY LastName, FirstName")
         rows = cursor.fetchall()
     return rows
-@utilities.record_elapsed_time
+#@utilities.record_elapsed_time
 def get_all_beds():
     with connection.cursor() as cursor:
         cursor.execute("SELECT UnitName+'-'+RoomAndBed [Bed] FROM dbo.mydataBed ORDER BY UnitName, RoomAndBed")
@@ -42,37 +43,37 @@ REASON_CHOICES = (
             ("Room Change","Room Change"),
         )
 
-class oooooPositiveCensusReport(models.Model):
- #   id = models.IntegerField(primary_key=True)
-    Unit = models.CharField(max_length=10) #usually 2 #from PatientGroupAbbreviation
-    room = models.CharField(max_length=6)
-    bed =  models.CharField(max_length=5)
-    mrn = models.CharField(max_length=9, null=True)
-    patientID = models.IntegerField( null=True)
-    lastname = models.CharField(max_length=50, null=True)
-    firstname=models.CharField(max_length=50, null=True)
-    CurrentAdmitDate = models.DateTimeField( null=True)
-    CensusStatus = models.CharField(max_length=30, null=True)
-    SweepTime = models.DateTimeField()
-    Obsolete = models.IntegerField(default = 0, db_column='obsolete')
-    Gender = models.CharField(max_length=1, null=True)
-    LevelOfCare = models.CharField(max_length=20, null=True)
-    inbed = models.CharField(max_length=6, null=True, blank=True, default='',choices=INBED_CHOICES, verbose_name='inbed')
-    reason = models.CharField(max_length=80, null=True, blank=True, default='', choices=REASON_CHOICES)
-    comment = models.CharField(max_length=80, null=True, blank=True, default='')
-    updatedby = models.CharField(max_length=80, null=True, blank=True, default='')
-    updatetime =models.DateTimeField(null=True)
-    
-
-    def __unicode__(self):
-        return '{} {} {}'.format(self.Unit, self.room, self.bed)
-
-    def __str__(self):
-        return '{} {} {} {}'.format(self.id, self.Unit, self.room, self.bed)
-
-    class Meta:
-        db_table = 'bedcheck'
-        managed = False
+# class oooooPositiveCensusReport(models.Model):
+#  #   id = models.IntegerField(primary_key=True)
+#     Unit = models.CharField(max_length=10) #usually 2 #from PatientGroupAbbreviation
+#     room = models.CharField(max_length=6)
+#     bed =  models.CharField(max_length=5)
+#     mrn = models.CharField(max_length=9, null=True)
+#     patientID = models.IntegerField( null=True)
+#     lastname = models.CharField(max_length=50, null=True)
+#     firstname=models.CharField(max_length=50, null=True)
+#     CurrentAdmitDate = models.DateTimeField( null=True)
+#     CensusStatus = models.CharField(max_length=30, null=True)
+#     SweepTime = models.DateTimeField()
+#     Obsolete = models.IntegerField(default = 0, db_column='obsolete')
+#     Gender = models.CharField(max_length=1, null=True)
+#     LevelOfCare = models.CharField(max_length=20, null=True)
+#     inbed = models.CharField(max_length=6, null=True, blank=True, default='',choices=INBED_CHOICES, verbose_name='inbed')
+#     reason = models.CharField(max_length=80, null=True, blank=True, default='', choices=REASON_CHOICES)
+#     comment = models.CharField(max_length=80, null=True, blank=True, default='')
+#     updatedby = models.CharField(max_length=80, null=True, blank=True, default='')
+#     updatetime =models.DateTimeField(null=True)
+#     
+# 
+#     def __unicode__(self):
+#         return '{} {} {}'.format(self.Unit, self.room, self.bed)
+# 
+#     def __str__(self):
+#         return '{} {} {} {}'.format(self.id, self.Unit, self.room, self.bed)
+# 
+#     class Meta:
+#         db_table = 'bedcheck'
+#         managed = False
         
 class PositiveCensusReport(models.Model):
  #   id provided automatically by framework
@@ -103,20 +104,20 @@ class PositiveCensusReport(models.Model):
         db_table = 'PositiveCensusReport'
         managed = False
         
-class CensusActionType(models.Model):
-    Id = models.CharField(max_length=10, primary_key=True, null=False)
-    Description = models.CharField(max_length=80, null=False)
-    
-    def __unicode__(self):
-        return '{}={}'.format(self.Id, self.Description)
-
-    def __str__(self):
-        return '{}={}'.format(self.id, self.description)
-        
-    class Meta:
-        pass
-        db_table = 'webapp_CensusActionType'
-        #managed = False
+# class CensusActionType(models.Model):
+#     Id = models.CharField(max_length=10, primary_key=True, null=False)
+#     Description = models.CharField(max_length=80, null=False)
+#     
+#     def __unicode__(self):
+#         return '{}={}'.format(self.Id, self.Description)
+# 
+#     def __str__(self):
+#         return '{}={}'.format(self.id, self.description)
+#         
+#     class Meta:
+#         pass
+#         db_table = 'webapp_CensusActionType'
+#         #managed = False
         
 ################################ mydata models after here ######################################
 
@@ -139,26 +140,36 @@ class CensusActionType(models.Model):
 
 
 class CensusChangeLog(models.Model):
-    action = models.CharField(max_length=50, default='error')
+    action    = models.CharField(max_length=50, default='')
+    firstname = models.CharField(max_length=50, default='')
+    lastname  = models.CharField(max_length=50, default='')
+    timestamp      = models.DateTimeField(null=True)
+    oldbed      = models.CharField( max_length=10, default='')
+    newbed      = models.CharField( max_length=10, default='')
+    newloc      = models.CharField( max_length=20, default='')
+    oldloc      = models.CharField( max_length=20, default='')
+    admitfrom   = models.CharField(max_length=50, default='')
+    dischargeto = models.CharField( max_length=50, default='')
+    user        = models.CharField( max_length=50, default='')
     
     
-class mydataBed(models.Model):  #see views defined for mydata
-    BedID = models.IntegerField(primary_key=True)
-    UnitName = models.CharField(max_length=50, null=True)
-    RoomAndBed = models.CharField(max_length=50, null=True)
-   
-    def __unicode__(self):
-        return '{}, {}'.format(self.UnitName, self.RoomAndBed)
-
-    def __str__(self):
-        return '{}, {}'.format(self.UnitName, self.RoomAndBed)
-        
-    class Meta:
-        db_table = 'mydataBed'
-        managed = False           
-    
-def get_all_bed_choices():
-    beds = mydataBed.objects.all().order_by('UnitName', 'RoomAndBed')
-    choices = [(bed.BedID, '{}-{}'.format(bed.UnitName, bed.RoomAndBed)) for bed in beds]
-    for c in choices: print(c)
-    return choices
+# class mydataBed(models.Model):  #see views defined for mydata
+#     BedID = models.IntegerField(primary_key=True)
+#     UnitName = models.CharField(max_length=50, null=True)
+#     RoomAndBed = models.CharField(max_length=50, null=True)
+#    
+#     def __unicode__(self):
+#         return '{}, {}'.format(self.UnitName, self.RoomAndBed)
+# 
+#     def __str__(self):
+#         return '{}, {}'.format(self.UnitName, self.RoomAndBed)
+#         
+#     class Meta:
+#         db_table = 'mydataBed'
+#         managed = False           
+#     
+# def get_all_bed_choices():
+#     beds = mydataBed.objects.all().order_by('UnitName', 'RoomAndBed')
+#     choices = [(bed.BedID, '{}-{}'.format(bed.UnitName, bed.RoomAndBed)) for bed in beds]
+#     for c in choices: print(c)
+#     return choices

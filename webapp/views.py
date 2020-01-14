@@ -29,7 +29,7 @@ import django.db.models.functions as x
 from django.contrib.auth.decorators import permission_required
 
 
-from .models import PositiveCensusReport, INBED_CHOICES, REASON_CHOICES
+from .models import PositiveCensusReport, INBED_CHOICES, REASON_CHOICES, CensusChangeLog
 from webapp import logic_census
 from webapp import sql_api 
 from webapp import forms
@@ -167,10 +167,24 @@ def monthly_summary(request):
 def notifications(request):
     TEMPLATE = 'webapp/testform.html'
     Database = sql_api.DatabaseQueryManager()
-    context = dict(user='frederick.sells')
+    USER='frederick.sells'
     FORM_CLASS = forms.CensusChangeForm
     
     if request.method == 'POST':
+        values =  dict(request.POST.items())
+        values.pop('csrfmiddlewaretoken')  #don't need this
+        values.pop('btnSubmit')
+        print(values)
+        date = values.pop('date')
+        time = values.pop('time')
+        date =  datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')  
+        print('xxxxxxxxxxxxxxxxxxxxxxxxxxx',date)
+        values['timestamp'] = date
+        record = CensusChangeLog(**values)
+        #record.__dict__.update(values)
+        print (values)
+        
+        record.save()
         return render(request, TEMPLATE)
 #         form = form_class(request.POST)
 #         if form.is_valid():
@@ -181,7 +195,7 @@ def notifications(request):
         action = request.GET.get('action', '0')
 #         if action == None:
 #             return render(request, TEMPLATE)
-        form = FORM_CLASS(initial={'action': action})
+        form = FORM_CLASS(initial={'action': action, 'user':USER})
         #print(form)
         #form.Action = action
 

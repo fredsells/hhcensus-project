@@ -45,5 +45,5 @@ def unittest_local_database(conn_str):
 
 if __name__ == '__main__':
     #unittest_local_database(local_database)
-    unittest_hharweb2_database(HHARWEB2)
+    #unittest_hharweb2_database(HHARWEB2)
     print ('done')

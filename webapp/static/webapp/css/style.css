@@ -93,6 +93,15 @@ to simplity the html and make pages consistent.
 	margin:10px;
 }
 
+.submit-button{
+	background-color:green;
+	color:#ffffff;
+	text-align:center;
+	font-size:20px;
+	padding:5px;
+	margin:5px;
+}
+
 .F {
 	color:red;
 	font-weight:bold;

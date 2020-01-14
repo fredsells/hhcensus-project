@@ -72,10 +72,137 @@ function showPatientPicker(){
 
 <table width="100%" style="background-color: #E7E7E7; margin: 30px 0px 5px 0px">
         <tbody>
-		{{ form }}
+        <tr>
+        	<td></td>
+        	<td colspan="2" align="center"> {{form.action }} 
+        	<button id="#ShowPatientPicker" onclick="showPatientPicker();" class="submit-button">Show Patients</button> 
+        	</td>
+        	<td/>
+		<tr>
+            <td align="right">
+				
+				 First Name      
+			</td>
+            <td >{{form.firstname}}</td>
+            <td align="right">  Last Name  </td>
+            <td align="left"> {{form.lastname}}    </td>
+        </tr>
+
+        <tr></tr>
+
+        <tr>
+            <td  align="right">{{action}} Date</td>
+            <td ><input class='datepicker' name="date"  id="event_date" required > </td>
+            <td align="right">            Time			</td>
+			<td>	<input type="time" id="time" name="time" required>            </td>
+            
+        </tr>
+        
+        
+{% if action == "Admission" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.newbed}} </td>
+            <td align="right">          Admitted From	</td>
+			<td>	{{form.admitfrom}}       </td>
+        </tr>
+ 
+         <tr>
+         	<td/>
+         	<td/>
+            <td  align="right">Level of Care</td>
+            <td >{{form.newloc}} </td>
+        </tr>
+ {% elif action == "Room Change" %}
+        <tr>
+            <td  align="right">Transfer From</td>
+            <td >{{form.oldbed}} </td>
+            <td align="right"> Transfer To	</td>
+			<td>	{{form.newbed}}       </td>
+        </tr>
+ 
+         <tr>
+         	<td/>
+         	<td/>
+            <td  align="right">Level of Care</td>
+            <td >{{form.newloc}} </td>
+        </tr>
+        
+{% elif action == "Out to Hospital" %}
+        <tr>
+            <td  align="right">From Room</td>
+            <td >{{form.oldbed}} </td>
+            <td align="right"> Transfer To	</td>
+			<td>	{{form.dischargeto}}       </td>
+        </tr>
+ 
+ {% elif action == "Return from Hospital" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.newbed}} </td>
+            <td align="right"> Transfer from	</td>
+			<td>	{{form.admitfrom}}       </td>
+        </tr>
+ 
+         <tr>
+         	<td/>
+         	<td/>
+            <td  align="right">Level of Care</td>
+            <td >{{form.newloc}} </td>
+        </tr>     
+        
+{% elif action == "Out to Leave of Absence" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.oldbed}} </td>
+            <td align="right"> Transfer To	</td>
+			<td>	{{form.dischargeto}}       </td>
+        </tr>
+ 
+{% elif action == "Return from Leave of Absence" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.newbed}} </td>
+            <td align="right"> Transfer from	</td>
+			<td>	{{form.admitfrom}}       </td>
+        </tr>
+ 
+         <tr>
+         	<td/>
+         	<td/>
+            <td  align="right">Level of Care</td>
+            <td >{{form.newloc}} </td>
+        </tr>     
+ 
+ {% elif action ==  "Discharge" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.oldbed}} </td>
+            <td align="right"> Transfer to	</td>
+			<td>	{{form.dischargeto}}       </td>
+        </tr>
+ 
+ {% elif action ==  "Deceased" %}
+        <tr>
+            <td  align="right">Room</td>
+            <td >{{form.oldbed}} </td>
+            
+        </tr>
+        
+{% else %}
+         <tr><td> There is no form defined for the action: {{action}} </td></tr>
+        
+ {% endif %}          
+        
+		<tr>
+			<td/>
+			<td align="right"> <input type="submit" name="btnSubmit" value="Submit"  id="btnSubmit" class="submit-button"></td>
+			<td align="right"> Entered By </td>
+			<td> {{form.user}}</td>
+		</tr>        
           </tbody>
 </table>
- <input type="submit" value="Submit"/>
+ 
 </form>
 </div>
 
