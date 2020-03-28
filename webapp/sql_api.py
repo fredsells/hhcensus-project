@@ -25,15 +25,24 @@ LOCAL_LAPTOP = (
         r'DATABASE=FredTesting;'
         r'Trusted_Connection=yes;'   )
 
+HHSWLDEV02 = (  #this works, even though UID and PWD are defined in ODBC DSN 32 bit
+    r'DSN=censusapps32;'
+    r'UID=hhcensus;'
+    r'PWD=Plan-Tree-Scale-Model-Seed-9;'
+    )  
+
 
 
 class DatabaseQueryManager(object):
     '''
-    classdocs
+    The methods are used to get applicable data from the local copy
+    of the MatrixCare (MyData) DB.  Each method is self explanatory
+    except "get_something" which is used byy all other methods to
+    convert the list of data records to a list of Python dictionaries.
     '''
 
 
-    def __init__(self, conn_str = BIDW_50582_HebrewHome, DEBUG=False):
+    def __init__(self, conn_str = HHSWLDEV02, DEBUG=False):
         self.CONNECTION_STRING = conn_str
         self.DEBUG = DEBUG
         self._get_connection()
@@ -53,45 +62,48 @@ class DatabaseQueryManager(object):
         #print(names)
         #print (records[0])
         records = [dict(zip(names, row )) for row in records] 
-
         #for r in records: print(r)
         cursor.close()
         return records
          
-    @utilities.record_elapsed_time        
     def get_beds(self):
         records = self.get_something(SQL.ALL_BEDS)
         return records
 
-    @utilities.record_elapsed_time        
     def get_patients(self):
         records = self.get_something(SQL.ALL_PATIENTS)
         return records
 
-    @utilities.record_elapsed_time        
     def get_level_of_care_definitions(self):
         records = self.get_something(SQL.LEVEL_OF_CARE_DEFINITIONS)
         return records
 
-    @utilities.record_elapsed_time        
     def get_leave_of_absence_definitions(self):
         records = self.get_something(SQL.CENSUS_LOA)
         return records
     
-    @utilities.record_elapsed_time        
+    
     def get_admit_discharge_locations(self):
         records = self.get_something(SQL.CENSUS_ADMIT_DISCHARGE_LOCATION)
         return records
+    
+    def get_all_beds_and_current_occupants(self):
+        records = self.get_something(SQL.All_BEDS_AND_CURRENT_OCCUPANTS)
+        return records
 
-
+def quickprint(title, records):
+    for record in records: print(title, record)
+    print()
+    
+@utilities.record_elapsed_time    
 def unittest():
-    mydata = DatabaseQueryManager(conn_str = BIDW_50582_HebrewHome)
-    loc = mydata.get_level_of_care_definitions()
-    return
-    beds = mydata.get_beds()
-    patients = mydata.get_patients()
-    loa = mydata.get_leave_of_absence_definitions()
-    locations = mydata.get_admit_discharge_locations()
+    mydata = DatabaseQueryManager()
+    quickprint('level of care',  mydata.get_level_of_care_definitions() )
+    quickprint('beds', mydata.get_beds() )
+    quickprint('patients', mydata.get_patients() )
+    quickprint('LoA',  mydata.get_leave_of_absence_definitions())
+    quickprint('Admit-DC Locations', mydata.get_admit_discharge_locations())
+    quickprint('Positive Census', mydata.get_all_beds_and_current_occupants())
 
 if __name__ == '__main__':
     print ('starting sql api')

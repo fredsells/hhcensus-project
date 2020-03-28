@@ -4,6 +4,8 @@ Created on Jan 13, 2020
 @author: fsells
 '''
 
+NO_REPLY = 'no-reply@hebrewhome.org'
+
 ADMISSION = 'Admission'
 ROOM_CHANGE = 'Room Change' 
 OUT_TO_HOSPITAL = 'Out to Hospital'

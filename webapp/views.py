@@ -20,19 +20,18 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache, cache_control
 #from django.contrib.auth.decorators import login_required
-from setuptools._vendor.six import _urllib_request_moved_attributes, _meth_self
-
-
-
-
+#from setuptools._vendor.six import _urllib_request_moved_attributes, _meth_self
 import django.db.models.functions as x
 from django.contrib.auth.decorators import permission_required
 
 
-from .models import PositiveCensusReport, INBED_CHOICES, REASON_CHOICES, CensusChangeLog
+from .models import NightlyBedCheck, INBED_CHOICES, REASON_CHOICES, CensusChangeLog
 from webapp import logic_census
 from webapp import sql_api 
 from webapp import forms
+from . import sql_api
+from webapp import email_sender
+from webapp.utilities import record_elapsed_time
 
 
 
@@ -55,16 +54,16 @@ def home(request):
     return render(request, 'webapp/home.html', context)
         
 
-def get_beds(unit='G1', obsolete=0, date=None):
-    queryset = PositiveCensusReport.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
-    return queryset
+# def get_beds(unit='G1', obsolete=0, date=None):
+#     queryset = NightlyBedCheck.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
+#     return queryset
     
      
 def logout(request):
     return render(request, 'webapp/logout.html', {})    
 
 def _update_bed(change, user, now):
-    bed = PositiveCensusReport.objects.get(pk=change.id)
+    bed = NightlyBedCheck.objects.get(pk=change.id)
     print (bed)
     bed.inbed=change.inbed
     bed.reason=change.reason
@@ -76,11 +75,11 @@ def _update_bed(change, user, now):
     return True
 
 def get_totals_by_unit(date):
-    beds = PositiveCensusReport.objects.filter(SweepTime__date=date, inbed='YES').order_by('unit', 'room', 'bed')
-    totals = beds.values('unit').annotate(total=Count('unit')).order_by('unit')
+    beds = NightlyBedCheck.objects.filter(RepDate=date, Inbed='YES').order_by('Unit', 'Room')
+    totals = beds.values('Unit').annotate(total=Count('Unit')).order_by('Unit')
     results = dict()
     for total in totals:
-        results[total['unit']]=total['total']
+        results[total['Unit']]=total['total']
     return results
 
 def census_tracking(request):
@@ -89,8 +88,10 @@ def census_tracking(request):
         date = datetime.datetime.strptime(date, '%m/%d/%Y')
     else:
         date = datetime.date.today()
-    beds = PositiveCensusReport.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(lastname=None).order_by('unit', 'room', 'bed')
-    beds = beds##[30:40] #todo remove this
+    print('census tracking', date)
+    beds = NightlyBedCheck.objects.filter(RepDate=date).exclude(ResidentName=None).order_by('Unit', 'Room', )
+    print( len(beds) )
+    for bed in beds: print(bed)
     totals_by_unit = get_totals_by_unit(date)
     pairs = totals_by_unit.items()
     context = dict(date=date, beds=beds, totals=pairs)
@@ -99,10 +100,11 @@ def census_tracking(request):
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
     if request.method=='GET':
-        unit = request.GET.get('Unit', DEFAULT_UNIT)
+        unit = request.GET.get('unit', DEFAULT_UNIT)
         print ('processing GET for', unit)
-        beds = get_beds(unit)
+        beds = logic_census.get_beds(unit, obsolete=0)
         for bed in beds:
+            print(bed)
             if bed.CurrentAdmitDate == None: continue #nobody in the bed
             bed.CurrentAdmitDate = bed.CurrentAdmitDate.strftime('%#m/%#d/%Y')
 #        beds = beds[25:30]  #good test data
@@ -119,30 +121,30 @@ def census_edit(request):
     
 
 @csrf_exempt
-def save_changes(request):
+def save_changes(request):  ###########saves changes to In Bed status page.
         user = 'fredtest'
         now = datetime.datetime.now()
         if request.is_ajax(): 
             data = json.loads(request.body.decode("UTF-8"))
-            print('json data', data)
+            ###############################################################print('json data', data)
             unit = data.get('unit', 'xxx' )
             patients = data.get('patients', [])
             for p in patients: 
-                print('p', p)
-                bed = PositiveCensusReport.objects.get(pk=p['id'])
-                bed.inbed=p['inbed']
-                bed.reason=p['reason']
-                bed.comment=p['comment']
-                bed.updatedby = user
-                bed.updatetime=now
-                bed.save(update_fields=['inbed', 'reason', 'comment', 'updatedby', 'updatetime'])
-                print('saved', bed.id, bed.reason, bed.comment, bed.inbed, bed.lastname)
+                print('json', p)
+                bed = NightlyBedCheck.objects.get(pk=p['id'])
+                bed.Inbed=p['inbed']
+                bed.Reason=p['reason']
+                bed.Comments=p['comment']
+                bed.UpdatedByName = user
+                bed.UpdateDatetime=now
+                bed.save()###update_fields=['Inbed', 'Reason', 'Comments', 'UpdatedByName', 'UpdateDatetime'])
+                print('saved {}'.format(bed))
 
             context = {'comment': 'update successful'}
             return JsonResponse(context)
         else:
             return HttpResponse('request was not json', request)
-    
+@record_elapsed_time    
 def monthly_summary(request):
     units=logic_census.get_units()
     this_month = datetime.date.today().replace(day=1)
@@ -154,7 +156,7 @@ def monthly_summary(request):
         startdate = this_month
     ndays = calendar.monthrange(startdate.year, startdate.month)[1]
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
-    print('daterange', startdate, enddate, ndays)
+    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdaterange', startdate, enddate, ndays)
     errors = logic_census.get_errors_by_day_and_unit(startdate, enddate)
     totals = logic_census.get_error_summary(units, startdate, enddate)
     context = dict(months=months, selectedmonth=startdate, errors=errors, units=units, totals=totals)
@@ -166,39 +168,34 @@ def monthly_summary(request):
 
 def notifications(request):
     TEMPLATE = 'webapp/testform.html'
-    Database = sql_api.DatabaseQueryManager()
     USER='frederick.sells'
     FORM_CLASS = forms.CensusChangeForm
-    
     if request.method == 'POST':
         values =  dict(request.POST.items())
-        values.pop('csrfmiddlewaretoken')  #don't need this
-        values.pop('btnSubmit')
-        print(values)
+        values.pop('csrfmiddlewaretoken', None)  #don't need this
+        values.pop('btnSubmit', None)
+        values['timestamp'] = datetime.datetime.now()
+        email_sender.email_census_edit_notification(**values)
         date = values.pop('date')
         time = values.pop('time')
-        date =  datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')  
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxx',date)
-        values['timestamp'] = date
+        values['eventtime'] = datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')  
         record = CensusChangeLog(**values)
-        #record.__dict__.update(values)
-        print (values)
-        
         record.save()
-        return render(request, TEMPLATE)
+        return redirect('/webapp/notifications')
 #         form = form_class(request.POST)
 #         if form.is_valid():
 #             pass  # does nothing, just trigger the validation
 #             print('posting form', form)
-    else:
+    else:  ####################################  GET method ##################################
         print('processing GET', request)
         action = request.GET.get('action', '0')
-#         if action == None:
-#             return render(request, TEMPLATE)
-        form = FORM_CLASS(initial={'action': action, 'user':USER})
-        #print(form)
-        #form.Action = action
-
-        context = dict(form=form, action=action)
-        print(context.keys() )
-        return render(request, TEMPLATE, context)
+        if action == None:
+            return render(request, TEMPLATE)
+        else:
+            patients=forms.CHOICES.Patients
+            status_choices=forms.CHOICES.StatusChoices
+            form = FORM_CLASS(initial= dict(action=action, user=USER))
+            context = dict(form=form, action=action, patients=patients, status_choices = status_choices)
+            return render(request, TEMPLATE, context)
+        
+        

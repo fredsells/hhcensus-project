@@ -1,0 +1,326 @@
+
+--USE FredTesting; -- in connection on laptop PS-6KR5WF2
+--GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+--------------------------------------------------------------------------------------------------
+IF OBJECT_ID('mydata.Census_AdmitDischargeLocation', 'U') IS NOT NULL DROP TABLE mydata.Census_AdmitDischargeLocation
+CREATE TABLE [mydata].[Census_AdmitDischargeLocation](
+	[AdmDisLocationID] [int] NOT NULL,
+	[OwningCorpID] [int] NULL,
+	[AdmitDischargeLocationCategoryID] [int] NULL,
+	[isCorporateActive] [bit] NULL,
+	[LocationName] [varchar](100) NULL,
+	[Description] [varchar](100) NULL,
+	[isAdmitLocation] [bit] NULL,
+	[isDischargeLocation] [bit] NULL,
+	[HospitalReadmissionTypeCode] [varchar](10) NULL,
+ CONSTRAINT [Census_AdmitDischargeLocation_PK] PRIMARY KEY CLUSTERED 
+(
+	[AdmDisLocationID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+--------------------------------------------------------------------------------------------------
+
+IF OBJECT_ID('mydata.Census_LevelOfCare', 'U') IS NOT NULL DROP TABLE mydata.Census_LevelOfCare
+CREATE TABLE [mydata].[Census_LevelOfCare](
+	[LOCID] [int] NOT NULL,
+	[FacilityID] [int] NULL,
+	[Description] [varchar](50) NULL,
+	
+	
+ CONSTRAINT [Census_LevelOfCare_PK] PRIMARY KEY CLUSTERED 
+(
+	[LOCID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+--------------------------------------------------------------------------------------------------
+IF OBJECT_ID('mydata.Census_LOA', 'U') IS NOT NULL DROP TABLE mydata.Census_LOA
+CREATE TABLE [mydata].[Census_LOA](
+	[LOAID] [int] NOT NULL,
+	[FacilityID] [int] NULL,
+	[LOACode] [char](2) NULL,
+	[Description] [varchar](25) NULL,
+	[Billable] [bit] NULL,
+	[WriteOff] [bit] NULL,
+ CONSTRAINT [Census_LOA_PK] PRIMARY KEY CLUSTERED 
+(
+	[LOAID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+---------------------------------------------------------------------------------------------
+IF OBJECT_ID('mydata.FacilityBed', 'U') IS NOT NULL DROP TABLE mydata.FacilityBed
+CREATE TABLE [mydata].[FacilityBed](
+	[BedID] [int] NOT NULL,
+	[RoomID] [int] NULL,
+	[BedName] [varchar](5) NULL,
+ CONSTRAINT [FacilityBed_PK] PRIMARY KEY CLUSTERED 
+(
+	[BedID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+-- ----------------------------------------------------------------------------------------------- 
+IF OBJECT_ID('mydata.FacilityRoom', 'U') IS NOT NULL DROP TABLE mydata.FacilityRoom
+
+CREATE TABLE [mydata].[FacilityRoom](
+	[RoomID] [int] NOT NULL,
+	[PatientGroupID] [int] NULL,
+	[RoomName] [varchar](6) NULL,
+	
+ CONSTRAINT [FacilityRoom_PK] PRIMARY KEY CLUSTERED 
+(
+	[RoomID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+-- -----------------------------------------------------------------------------------------------
+IF OBJECT_ID('mydata.FacilityUnitRoomBed', 'U') IS NOT NULL DROP TABLE mydata.FacilityUnitRoomBed
+CREATE TABLE [mydata].[FacilityUnitRoomBed](
+	[BedID] [int] NOT NULL,
+	[RoomID] [int] NULL,
+	[UnitID] [int] NULL,
+	[FacilityID] [int] NULL,
+	[BuildingID] [int] NULL,
+	[UnitName] [varchar](25) NULL,
+	[RoomName] [varchar](6) NULL,
+	[BedName] [varchar](5) NULL,
+ CONSTRAINT [FacilityUnitRoomBed_PK] PRIMARY KEY CLUSTERED 
+(
+	[BedID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+-------------------------------------------------------------------------------------------------
+
+
+IF OBJECT_ID('mydata.Patient', 'U') IS NOT NULL DROP TABLE mydata.Patient
+CREATE TABLE [mydata].[Patient](
+	[PatientID] [int] NOT NULL,
+	[IsActive] [bit] NULL,
+	[FirstName] [varchar](50) NULL,
+	[MiddleName] [varchar](50) NULL,
+	[LastName] [varchar](50) NULL,
+	[SSN] [char](11) NULL,
+	[AddressID] [int] NULL,
+	[DateOfBirth] [datetime2](7) NULL,
+	[Sex] [char](1) NULL,
+	[AttendingPhysicianID] [int] NULL,
+	[RACECODE] [char](10) NULL,
+	[MARITALSTATUSCODE] [char](10) NULL,
+	[MedicareNumber] [varchar](25) NULL,
+	[MedicaidNumber] [varchar](25) NULL,
+	[MothersMaidenName] [varchar](25) NULL,
+	[PreferredName] [varchar](25) NULL,
+	[POA] [varchar](30) NULL,
+	[RELIGIONCODE] [char](10) NULL,
+	[MilitaryService] [varchar](25) NULL,
+	[PharmacyID] [int] NULL,
+--	[Notes] [varchar](6500) NULL,
+--	[IdealBodyWeight] [float] NULL,
+--	[Dialysis] [bit] NULL,
+--	[Insurance] [varchar](256) NULL,
+	[ContactAddressID] [int] NULL,
+	[DNR] [bit] NULL,
+	[MedicalRecordNumber] [varchar](9) NULL,
+--	[ResidentNumber] [varchar](15) NULL,
+--	[PreviousOccupation] [varchar](100) NULL,
+--	[FirstLanguage] [varchar](80) NULL,
+	[RoomNumber] [varchar](151) NULL,
+--	[LastModified] [datetime2](7) NULL,
+--	[UserID] [int] NULL,
+	[OriginalAdmtDt] [datetime2](7) NULL,
+	[CurrentAdmtDt] [datetime2](7) NULL,
+--	[PatientDnrID] [int] NULL,
+	[CurrentReturnDt] [datetime2](7) NULL,
+	[VisitCount] [int] NULL,
+	[CensusStatus] [varchar](30) NULL,
+--	[faceSheetNotes] [varchar](6500) NULL,
+	[MedicareBNumber] [varchar](25) NULL,
+--	[ThirdPartyId] [varchar](20) NULL,
+--	[ThirdPartySource] [varchar](20) NULL,
+--	[MPI] [int] NULL,
+--	[ExcludeFromMPI] [bit] NULL,
+--	[MPILinkDateGMT] [datetime2](7) NULL,
+--	[OptIn] [bit] NULL,
+--	[IsInXDS] [bit] NULL,
+--	[DischargeAddressID] [int] NULL,
+--	[HICNMedicareA] [varchar](25) NULL,
+--	[HICNMedicareB] [varchar](25) NULL,
+--	[isRRB] [bit] NULL,
+	[CoveredByManagedCare] [bit] NULL,
+--	[MX1_PersonID] [int] NULL,
+--	[SmokingStatusID] [tinyint] NULL,
+	[LanguageKey] [char](3) NULL,
+--	[PatientLabelID] [int] NULL,
+--	[InsertDate] [datetime2](7) NULL,
+--	[UpdateDate] [datetime2](7) NULL,
+--	[DeletedFlag] [bit] NULL,
+ CONSTRAINT [Patient_PK] PRIMARY KEY CLUSTERED 
+(
+	[PatientID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+--------------------------------------------------------------------------------------------------
+
+
+
+
+IF OBJECT_ID('mydata.PatientCensus', 'U') IS NOT NULL DROP TABLE mydata.PatientCensus
+CREATE TABLE [mydata].[PatientCensus](
+	[CensusID] [int] NOT NULL,
+	[FacilityID] [int] NULL,
+	[PatientID] [int] NULL,
+	[DateTime] [datetime2](7) NULL,
+	[CensusType] [int] NULL,
+	[Payer] [int] NULL,
+	[LOC] [int] NULL,
+	[AdmSrc] [char](1) NULL,
+	[AdmType] [char](1) NULL,
+	[PSC] [char](2) NULL,
+	[LOA] [int] NULL,
+	[BuildingID] [int] NULL,
+	[HallID] [int] NULL,
+	[RoomID] [int] NULL,
+	[BedID] [int] NULL,
+	[NewBenefit] [bit] NULL,
+	[Note] [varchar](250) NULL,
+	[EndDate] [datetime2](7) NULL,
+	[DischargeType] [int] NULL,
+	[PartADays] [int] NULL,
+--	[EnhancedDays] [int] NULL,
+--	[Deleted] [bit] NULL,
+--	[DeleteDate] [datetime2](7) NULL,
+--	[DeletedBy] [int] NULL,
+--	[LastModifiedDate] [datetime2](7) NULL,
+--	[LastModifiedBy] [int] NULL,
+--	[AdmitFromLocationID] [int] NULL,
+--	[AdmitReferralSourceID] [int] NULL,
+--	[CreatedDate] [datetime2](7) NULL,
+--	[CreatedByID] [int] NULL,
+--	[AcuteDischargingHospitalID] [int] NULL,
+--	[AcuteReporting] [bit] NULL,
+--	[ACHInpatientStay] [bit] NULL,
+--	[AcuteDischargeDateTime] [datetime2](7) NULL,
+--	[RestartMdsSchedule] [bit] NULL,
+--	[AdmissionStatusCodeDetailID] [int] NULL,
+--	[CensusSubTypeID] [int] NULL,
+--	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--	[DeletedFlag] [bit] NULL,
+ CONSTRAINT [PatientCensus_PK] PRIMARY KEY CLUSTERED 
+(
+	[CensusID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+-- ------------------------------------------------------------------------------------
+
+
+IF OBJECT_ID('mydata.PatientGroup', 'U') IS NOT NULL DROP TABLE mydata.PatientGroup
+CREATE TABLE [mydata].[PatientGroup](
+	[PatientGroupID] [int] NOT NULL,
+	[FacilityID] [int] NULL,
+	[Description] [varchar](25) NULL,
+	[BuildingID] [int] NULL,
+	--[GL_Segment] [varchar](10) NULL,
+	--[Abbreviation] [varchar](10) NULL,
+	--[UsesPOC] [bit] NULL,
+	--[InsertDate] [datetime2](7) NULL,
+	--[UpdateDate] [datetime2](7) NULL,
+	--[DeletedFlag] [bit] NULL,
+ CONSTRAINT [PatientGroup_PK] PRIMARY KEY CLUSTERED 
+(
+	[PatientGroupID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+-- -----------------------------------------------------------------------------------------------
+IF OBJECT_ID('mydata.PatientStayElement', 'U') IS NOT NULL DROP TABLE mydata.PatientStayElement
+CREATE TABLE [mydata].[PatientStayElement](
+	[FacilityID] [int] NOT NULL,
+	[PatientID] [int] NOT NULL,
+	[StartDate] [datetime2](7) NOT NULL,
+	[EndDate] [datetime2](7) NULL,
+	[AdmitDate] [datetime2](7) NULL,
+	[CensusType] [int] NULL,
+	[PayerType] [int] NULL,
+	[PayerID] [int] NULL,
+	[UnitID] [int] NULL,
+	[RoomID] [int] NULL,
+	[BedID] [int] NULL,
+	[StartCensusID] [int] NULL,
+	[EndCensusID] [int] NULL,
+	[AdmitType] [int] NULL,
+	[AdmitSource] [char](1) NULL,
+	[PSCCode] [char](2) NULL,
+	[DischType] [int] NULL,
+	[Billable] [int] NULL,
+	[Certified] [int] NULL,
+	[Bedhold] [int] NULL,
+	[VisitCount] [int] NULL,
+	[LastStatus] [varchar](30) NULL,
+	[WriteOff] [bit] NULL,
+	[LOCID] [int] NULL,
+	[DischargeExpireDuringLeave] [int] NULL,
+	[DischargeOutpatientSameDay] [bit] NULL,
+--	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--	[DeletedFlag] [bit] NULL
+) ON [PRIMARY]
+
+GO
+
+
+
+
+-- ---------------------------------------------------------------------------------------------- 
+
+IF OBJECT_ID('mydata.Census_Types', 'U') IS NOT NULL DROP TABLE mydata.Census_Types
+CREATE TABLE [mydata].[Census_Types](
+	[CensusType] [int] NOT NULL,
+	[Description] [varchar](20) NULL,
+ CONSTRAINT [Census_Types_PK] PRIMARY KEY CLUSTERED 
+(
+	[CensusType] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+-- -----------------------------------------------------------------------------------------------
+--CREATE  INDEX PatientStayElement_NDX ON             mydata.PatientStayElement(PatientID);
+
+/****** Object:  Table [mydata].[LogMyDataRefresh]    Script Date: 2/24/2020 12:56:11 PM ******/
+
+CREATE TABLE [mydata].[LogMyDataRefresh](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[LastRefresh] [datetime] NOT NULL
+) ON [PRIMARY]
+
+GO
+
+
+

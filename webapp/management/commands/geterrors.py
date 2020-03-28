@@ -54,13 +54,13 @@ def oooooooooooooooooooget_summary(units, startdate, enddate):
     
 def ooxxxoooooooooooooooooooooooooget_summary(units, startdate, enddate):    
     print (startdate, enddate)
-    month = models.PositiveCensusReport.objects.filter(SweepTime__range=[startdate, enddate])
+    month = models.NightlyBedCheck.objects.filter(SweepTime__range=[startdate, enddate])
     ndays = month.values('SweepTime').distinct().count()  #aggregate(total=Count('SweepTime'))
     #counts = month.aggregate(blank=Count('pk', only=Q(inbed='')))
     #print (counts)
     for i in range(ndays):
         censusdate = startdate+datetime.timedelta(days=i)
-        thisday = month.filter(SweepTime__date=censusdate, inbed='').values('unit').aggregate(total=Count('unit'))
+        thisday = month.filter(SweepTime__date=censusdate, inbed='').values('Unit').aggregate(total=Count('Unit'))
         print('thisday', censusdate,  thisday)
         #blank = month.filter(inbed='').
         #print blank
@@ -87,8 +87,8 @@ class Command(BaseCommand):
         enddate = startdate + datetime.timedelta(days=ndays)
         print (startdate, ndays, enddate)
         #print (startdate, enddate, ndays)
-        #month = models.PositiveCensusReport.objects.filter(SweepTime__range=[startdate, enddate]).exclude(Obsolete=1).order_by('SweepTime', 'unit', 'room', 'bed')
-        units = list(models.PositiveCensusReport.objects.order_by('unit').values_list('unit', flat=True).distinct())
+        #month = models.NightlyBedCheck.objects.filter(SweepTime__range=[startdate, enddate]).exclude(Obsolete=1).order_by('SweepTime', 'unit', 'room', 'bed')
+        units = list(models.NightlyBedCheck.objects.order_by('Unit').values_list('Unit', flat=True).distinct())
         #print (units)
        ## daily_errors = logic_census.get_errors_by_day_and_unit(startdate, enddate)
         #########for r in daily_errors: print('error', r)

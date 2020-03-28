@@ -76,6 +76,7 @@ function printthis() {
 	<td align="center">LOC</td>
 	<td>Gender</td>
 	<td align="right">Admit&nbsp;Date</td>
+	<td>In Bed</td>
 	<td>Reason</td>
 	<td>Comments</td>
 	
@@ -85,17 +86,17 @@ function printthis() {
 {% for bed in beds %}
 	<tr> 
 		<td>{{bed.unit}}</td>
-		<td> {{bed.room}}/{{bed.bed}}</td>
+		<td> {{bed.Room}}</td>
 		
-			<td class="name">{{bed.lastname}}, {{bed.firstname}}</td>
-			<td> {{bed.CensusStatus}}</td>
+			<td class="name">{{bed.ResidentName}}</td>
+			<td> {{bed.Status}}</td>
 			<td> {{bed.LevelOfCare}}</td>
 		
 			<td align="center" class="{{bed.Gender}}"> {{bed.Gender}}</td>
 			<td> {{bed.CurrentAdmitDate|date:'Y/m/d'}}</td>
-		
-			<td> {{bed.reason|default_if_none:""}}</td>
-			<td> {{bed.comment|default_if_none:""}}  </td>			
+			<td>{{bed.Inbed}}</td>
+			<td> {{bed.Reason|default_if_none:""}}</td>
+			<td> {{bed.Comments|default_if_none:""}}  </td>			
 		
 	</tr>
 {% endfor %}

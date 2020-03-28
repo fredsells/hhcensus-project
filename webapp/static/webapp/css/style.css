@@ -35,9 +35,12 @@ table {
    padding: 5px;
   }
 
-  #action button {
-    background-color : green;
+#ShowPatientPicker {
+    background-color : blue;
     color: white;
+	opacity = 1.0;
+	font-weight:bold;
+	font-size:14px;
   }
 
   .horizontal-container {
@@ -45,6 +48,9 @@ table {
     flex-direction: row;
   }
 
+#dialog table tr{
+	cursor:pointer;
+}
 
 /*********************************************************
 the following css is to use a table for form layout.

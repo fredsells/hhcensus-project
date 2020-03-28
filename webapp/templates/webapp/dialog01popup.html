@@ -45,6 +45,20 @@ function filter_people() {
 }
 	
 
+   $("#people tr").click(function (e) {
+	   console.log("start click");
+        var lastname  = $(this).attr('data-lastname');
+		var firstname = $(this).attr('data-firstname');
+		var bed       = $(this).attr('data-bed');
+		var LoC       = $(this).attr('data-loc');
+        console.log("row click "+lastname +" " + firstname+" " + bed+" " + LoC);
+		$("#id_lastname").val(lastname);
+		$("#id_firstname").val(firstname);
+		$('#id_oldbed').val(bed)
+		$('#id_oldloc').val(LoC)
+		
+		$("#patientpicker").dialog("close");
+     });
 
 	
 });	
@@ -58,7 +72,7 @@ function filter_people() {
 
 
 
-<div class="dialog" id="delete" title="Select a Resident" style="display: inline-block">
+<div class="dialog" id="patientpicker" title="Select a Resident" style="display: inline-block">
 	<table>
 	<thead>
 	<tr> <th> Status</th> <th> First Letter of Last Name </th> </tr>
@@ -87,19 +101,28 @@ function filter_people() {
 	</table>
 	
 	
-<table class="TableAlteringRows"">
+<table class="TableAlteringRows">
 <thead>
 <tr>
-<th>Last Name</th> <th> First Name </th> <th> Census Status </th>
+<th>Last Name</th> <th> First Name </th> <th> Census Status </th> <th> Gender </th> <th> Level of Care </th> <th> Bed </th>
 </tr>
 </thead>
 <tbody  id="people">
 
 {% for patient in patients %}
-<tr class="{{patient.Letter}} {{patient.CensusStatus}} All">
-	<td> {{patient.LastName}}</td>
-	<td> {{patient.FirstName}}</td>
-	<td> {{patient.CensusStatus}}</td>
+
+<tr class="{{patient.Letter}} {{patient.CensusStatus}} All" 
+	data-lastname="{{patient.LastName}}"
+	data-firstname="{{patient.FirstName}}"
+	data-bed="{{patient.RoomAndBed}}"
+	data-loc="{{patient.LevelOfCare}}" 
+	>
+		<td> {{patient.LastName}}</td>
+		<td> {{patient.FirstName}}</td>
+		<td> {{patient.CensusStatus}}</td>
+		<td> {{patient.Sex}}</td>	
+		<td> {{patient.LevelOfCare}}</td>
+		<td> {{patient.RoomAndBed}}</td>
 </tr>
 {% endfor %}
 </tbody>

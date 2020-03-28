@@ -22,7 +22,7 @@ DEBUG = False
 ONEDAY = datetime.timedelta(days=1)
 
 def get_units( obsolete=0, date=None): 
-    units = models.PositiveCensusReport.objects.filter(Obsolete=obsolete).order_by('unit').values_list('unit', flat=True).distinct()
+    units = models.NightlyBedCheck.objects.filter(Obsolete=obsolete).order_by('Unit').values_list('Unit', flat=True).distinct()
     return list(units)
 
 
@@ -30,10 +30,10 @@ def get_errors_by_day_and_unit(startdate, enddate):
     results = []
     date = startdate
     while date <= enddate:
-        totals = models.PositiveCensusReport.objects.filter(SweepTime__date=date).exclude(inbed='YES').exclude(inbed='NO', reason='').values('unit').annotate(total=Count('SweepTime'))
+        totals = models.NightlyBedCheck.objects.filter(RepDate=date).exclude(Inbed='YES').exclude(Inbed='NO', Reason='').values('Unit').annotate(total=Count('RepDate'))
         errors = dict(date=date)
         for total in totals:
-            errors[total['unit']]=total['total']
+            errors[total['Unit']]=total['total']
         results.append ( errors)
         date += ONEDAY
     return results
@@ -43,7 +43,7 @@ def get_error_summary(units, startdate, enddate):
     ndays = enddate-startdate
     ndays = 1+ndays.days
     print(startdate, enddate, ndays)
-    census = models.PositiveCensusReport.objects.filter(SweepTime__date__range=[startdate, enddate]).exclude(mrn='')
+    census = models.NightlyBedCheck.objects.filter(RepDate__range=[startdate, enddate]).exclude(ResidentNumber='')
     partial_census = dict(zip(units,[0]*len(units)))
     full_census = dict(zip(units,[0]*len(units)))
     totals = dict(zip(units,[ndays]*len(units)))
@@ -53,18 +53,18 @@ def get_error_summary(units, startdate, enddate):
     partial_census['title'] = 'Days of Partial Census Done'
     nonedone['title'] = 'Days of No Census Done'
     date = startdate
-    days_with_census = census.values('SweepTime').distinct().count()#aggregate(days=Count('SweepTime'))
+    days_with_census = census.values('RepDate').distinct().count()#aggregate(days=Count('SweepTime'))
     print(ndays, days_with_census, '<<<<<<<<<<<<<<<<<<<<<<<<<<')
     while date <= enddate:
         #print(date)
-        aday = census.filter(SweepTime__date=date)
+        aday = census.filter(RepDate=date)
         for unit in units:
-            aunit = aday.filter(unit=unit)
-            if aunit.exclude(inbed='YES').exclude(inbed='NO', reason='').values('unit').count():
+            aunit = aday.filter(Unit=unit)
+            if aunit.exclude(Inbed='YES').exclude(Inbed='NO', Reason='').values('Unit').count():
                 partial_census[unit] += 1
-            if aunit.filter(inbed='YES').values('unit').count():
+            if aunit.filter(Inbed='YES').values('Unit').count():
                 full_census[unit] += 1
-            if aunit.filter(inbed='NO').exclude(reason='').values('unit').count():
+            if aunit.filter(Inbed='NO').exclude(Reason='').values('Unit').count():
                 full_census[unit] += 1
             nonedone[unit] = 1+ndays-days_with_census-full_census[unit]
             
@@ -117,4 +117,12 @@ def count_days_with_errors(units, ndays, errors):
 #@utilities.record_elapsed_time
 # def get_all_patients():
 #     patients = models.mydataPatients.objects.all().order_by('LastName', 'FirstName').values()
+
+
+
 #     return patients
+
+
+def get_beds(unit, obsolete=0, date=None):
+    queryset = models.NightlyBedCheck.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
+    return queryset

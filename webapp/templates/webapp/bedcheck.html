@@ -235,7 +235,7 @@ function logout() {
 	<td align="right">Admit&nbsp;Date</td>
 	<td>Status</td>
 	<td align="center">LOC</td>
-	<td align="center">YesNo</td>
+	<td align="center">Inbed</td>
 	<td>Reason</td>
 	<td>Comments</td>
 	<td>Updated&nbsp;By</td>
@@ -255,10 +255,12 @@ function logout() {
 		<td> {{ forloop.counter }} </td> 
 	
 	
-		<td> {{bed.room}}/{{bed.bed}}</td>
-		{% if bed.lastname != None %}
-			<td class="name">{{bed.lastname}}, {{bed.firstname}}</td>
-			<td class="mrn"> {{bed.mrn}}</td>
+		<td> {{bed.Room}} </td>
+					
+
+		{% if bed.ResidentName != None %}
+			<td class="name">{{bed.ResidentName}}</td>
+			<td class="mrn"> {{bed.ResidentNumber}}</td>
 			<td class="{{bed.Gender}}"> {{bed.Gender}}</td>
 			<td> {{bed.CurrentAdmitDate}}</td>
 			<td> {{bed.CensusStatus}}</td>
@@ -267,7 +269,7 @@ function logout() {
 			<select class="inbed" id="inbed{{bed.id}}" name="inbed{{bed.id}}" onchange="inbed_changed(this)">
 					{% for item in inbed_choices %}
 						<option value="{{item.1}}" 
-						{% if item.1 == bed.inbed %}selected="selected"{% endif %}>
+						{% if item.1 == bed.Inbed %}selected="selected"{% endif %}>
 						{{item.1}}
 						</option>
 					{% endfor %}
@@ -277,16 +279,16 @@ function logout() {
 			<select class="reason"  id="reason{{bed.id}}" name="reason{{bed.id}}" onchange="something_changed(this)" autocomplete="off">
 					{% for item in reason_choices %}
 						<option value="{{item.1}}" 
-						{% if item.1 == bed.reason %}selected="selected"{% endif %}>
+						{% if item.1 == bed.Reason %}selected="selected"{% endif %}>
 						{{item.1}}
 						</option>
 					{% endfor %}
 			</select>
 			</td>
-			<td> <input class="comment" type="textfield" id="comment{{bed.id}}" name="comment{{bed.id}}" value="{{bed.comment}}" 
+			<td> <input class="comment" type="textfield" id="comment{{bed.id}}" name="comment{{bed.id}}" value="{{bed.Comments}}" 
 			autocomplete="off" onchange="something_changed(this)"/> </td>
-			<td> {{bed.updatedby|default_if_none:""}}</td>
-			<td> {{bed.updatetime|date:'Y-m-d H:i'}}</td>
+			<td> {{bed.UpdatedByName|default_if_none:""}}</td>
+			<td> {{bed.UpdateDatetime|date:'Y-m-d H:i'}}</td>
 			
 			
 		{% endif %}

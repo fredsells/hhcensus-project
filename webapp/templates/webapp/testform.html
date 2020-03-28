@@ -40,7 +40,7 @@ $(document).ready( function() {
 
 function showPatientPicker(){
 	console.log("show patient picker ");
-	 $( "#delete" ).dialog( "open" );
+	 $( "#patientpicker" ).dialog( "open" );
 
 }
 
@@ -55,49 +55,53 @@ function showPatientPicker(){
 
 <div class="center-div" style="width:100%;">
 
-<H2>Test Form </H2>
+<H2> 
+	{%if action == '0' %}
+		Enter Census
+	{% else %}
+		{{ action }} 
+	{% endif %}
+	Notification 
+</H2>
 
 
-
-
-<p> {{ action }}</p>
-
-
-
-    
 
 
 <form method="POST" action="notifications">
    {% csrf_token %}
 
+
+
 <table width="100%" style="background-color: #E7E7E7; margin: 30px 0px 5px 0px">
+		<thead>
+		<tr>
+        	
+        	<td colspan="4" align="center"> {{form.action }} </td>
+        </tr>
+		</thead>
+{% if action != '0' %}		
         <tbody>
-        <tr>
-        	<td></td>
-        	<td colspan="2" align="center"> {{form.action }} 
-        	<button id="#ShowPatientPicker" onclick="showPatientPicker();" class="submit-button">Show Patients</button> 
-        	</td>
-        	<td/>
+        
 		<tr>
             <td align="right">
-				
-				 First Name      
+				<button id="ShowPatientPicker" onclick="showPatientPicker();" class="action">Show Patients</button> 
+				&nbsp; &nbsp;  First Name      
 			</td>
-            <td >{{form.firstname}}</td>
+            <td id="firstname">{{form.firstname}}</td>
             <td align="right">  Last Name  </td>
-            <td align="left"> {{form.lastname}}    </td>
+            <td id="lastname" align="left"> {{form.lastname}}    </td>
         </tr>
 
         <tr></tr>
 
         <tr>
-            <td  align="right">{{action}} Date</td>
+            <td  align="right"> Date</td>
             <td ><input class='datepicker' name="date"  id="event_date" required > </td>
             <td align="right">            Time			</td>
 			<td>	<input type="time" id="time" name="time" required>            </td>
             
         </tr>
-        
+ 
         
 {% if action == "Admission" %}
         <tr>
@@ -116,14 +120,14 @@ function showPatientPicker(){
  {% elif action == "Room Change" %}
         <tr>
             <td  align="right">Transfer From</td>
-            <td >{{form.oldbed}} </td>
+            <td id="oldbed">{{form.oldbed}} </td>
             <td align="right"> Transfer To	</td>
 			<td>	{{form.newbed}}       </td>
         </tr>
  
          <tr>
-         	<td/>
-         	<td/>
+            <td align="right">Prior Level of Care</td>
+            <td id="oldloc"> {{form.oldloc}} </td>
             <td  align="right">Level of Care</td>
             <td >{{form.newloc}} </td>
         </tr>
@@ -131,9 +135,15 @@ function showPatientPicker(){
 {% elif action == "Out to Hospital" %}
         <tr>
             <td  align="right">From Room</td>
-            <td >{{form.oldbed}} </td>
+            <td id="oldbed">{{form.oldbed}} </td>
             <td align="right"> Transfer To	</td>
 			<td>	{{form.dischargeto}}       </td>
+        </tr>
+        <tr>
+            <td align="right">Prior Level of Care</td>
+            <td id="oldloc"> {{form.oldloc}} </td>
+            <td/>
+            <td/>
         </tr>
  
  {% elif action == "Return from Hospital" %}
@@ -153,10 +163,16 @@ function showPatientPicker(){
         
 {% elif action == "Out to Leave of Absence" %}
         <tr>
-            <td  align="right">Room</td>
-            <td >{{form.oldbed}} </td>
+            <td  align="right">Prior Room</td>
+            <td id="oldbed">{{form.oldbed}} </td>
             <td align="right"> Transfer To	</td>
 			<td>	{{form.dischargeto}}       </td>
+        </tr>
+        <tr>
+            <td align="right">Prior Level of Care</td>
+            <td id="oldloc"> {{form.oldloc}} </td>
+            <td/>
+            <td/>
         </tr>
  
 {% elif action == "Return from Leave of Absence" %}
@@ -168,25 +184,32 @@ function showPatientPicker(){
         </tr>
  
          <tr>
-         	<td/>
-         	<td/>
-            <td  align="right">Level of Care</td>
+            <td align="right">Prior Level of Care</td>
+            <td id="oldloc"> {{form.oldloc}} </td>
+            <td  align="right">New Level of Care</td>
             <td >{{form.newloc}} </td>
         </tr>     
  
  {% elif action ==  "Discharge" %}
         <tr>
             <td  align="right">Room</td>
-            <td >{{form.oldbed}} </td>
+            <td id="oldbed">{{form.oldbed}} </td>
             <td align="right"> Transfer to	</td>
 			<td>	{{form.dischargeto}}       </td>
         </tr>
+        <tr>
+            <td align="right">Prior Level of Care</td>
+            <td> {{form.oldloc}} </td>
+            <td/>
+            <td/>
+       </tr>     
  
  {% elif action ==  "Deceased" %}
         <tr>
             <td  align="right">Room</td>
-            <td >{{form.oldbed}} </td>
-            
+            <td id="oldbed">{{form.oldbed}} </td>
+            <td align="right">Prior Level of Care</td>
+            <td> {{form.oldloc}} </td>            
         </tr>
         
 {% else %}
@@ -201,6 +224,7 @@ function showPatientPicker(){
 			<td> {{form.user}}</td>
 		</tr>        
           </tbody>
+{% endif %}          
 </table>
  
 </form>
@@ -210,6 +234,6 @@ function showPatientPicker(){
 
 
 
-
+{% include "./dialog01popup.html" %}    
    </body>
 {% endblock %}

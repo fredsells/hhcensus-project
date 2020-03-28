@@ -19,8 +19,15 @@ HH_DEV = (r'DRIVER={SQL Server};'
                 r'SERVER=HHSWLSQLDEV01;'
                 r'DATABASE=FredTesting;'
                 r'Trusted_Connection=yes;'    )
+
+HHSWLDEV02 = (  #this works, even though UID and PWD are defined in ODBC DSN 32 bit
+    r'DSN=censusapps32;'
+    r'UID=hhcensus;'
+    r'PWD=Plan-Tree-Scale-Model-Seed-9;'
+    )        
+
+conn_str = HHSWLDEV02                
   
-conn_str = LAPTOP_SQL
 
 
 class HHDB(object):
@@ -31,15 +38,17 @@ class HHDB(object):
         self.Connection.commit()
         
     def insert_bed_occupancy(self, data):
+        #print(data)
+        print(data[0])
         Cursor = self.Connection.cursor()
-        Cursor.execute('SET IDENTITY_INSERT dbo.bedcheck OFF')
-        Cursor.execute('UPDATE dbo.PositiveCensusReport SET Obsolete=1')
+        Cursor.execute('SET IDENTITY_INSERT dbo.NightlyBedCheck OFF')
+        Cursor.execute('UPDATE dbo.NightlyBedCheck SET Obsolete=1')
         self.Connection.commit()
-        print(type(data))
-        print('\n\ninsert', data[0])
-        sql = '''INSERT INTO dbo.PositiveCensusReport 
-                (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, OrigAdmitDate, RepDate, Obsolete)
-                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)'''
+        #print(type(data))
+        print('\n\ninsert', data)
+        sql = '''INSERT INTO dbo.NightlyBedCheck 
+                (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, CurrentAdmitDate)
+                VALUES ( ?, ?, ?, ?, ?, ?, ?, ?'''#, ?, 0)'''
         Cursor.executemany(sql, data)
         self.Connection.commit()
         Cursor.close()

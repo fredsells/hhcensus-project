@@ -4,7 +4,19 @@ Created on Dec 28, 2019
 @author: fsells
 '''
 
-import time, sys                                                
+import time, sys               
+
+class DataObject:
+    def __init__(self, kwargs):
+        self.__dict__.update(kwargs)
+        
+    def __repr__(self):
+        pairs = list(self.__dict__.items())
+        pairs.sort()
+        pairs = ['%s=%s'%p for p in pairs]
+        text = ', '.join(pairs)
+        return text
+                                 
 
 def record_elapsed_time(method):
 

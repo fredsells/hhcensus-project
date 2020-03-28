@@ -11,6 +11,18 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import platform
+import socket
+print (socket.getfqdn() )
+
+EMAIL_HOST = 'smtp.hebrewhome.org'
+#EMAIL_PORT = 587  #for secure, use 25 for non secure.
+#default '' EMAIL_HOST_USER = ''
+#default = '' EMAIL_HOST_PASSOWRD = None
+EMAIL_SUBMECT_PREFIX = ''  # default='[Django] '
+#EMAIL_USE_TLS = True #depends on email provider
+#EMAIL_USE_SSL = False
+
 DATE_INPUT_FORMATS = ['%Y-%m-%d'] #'%d-%m-%Y', '%m/%d/%Y', 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -82,49 +94,66 @@ WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
 
 
-LOCAL_SQLEXPRESS_DB = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'HHBedCheck',
-        'HOST': r'.\SQLEXPRESS',
-       # 'PORT':'1433',
-        'USER': 'django',
-        'PASSWORD': 'django',
-        'OPTIONS': {
-                 'driver': 'SQL Server Native Client 10.0',                
-                 }
-        },  
-    }
+# LOCAL_SQLEXPRESS_DB = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'NAME': 'HHBedCheck',
+#         'HOST': r'.\SQLEXPRESS',
+#        # 'PORT':'1433',
+#         'USER': 'django',
+#         'PASSWORD': 'django',
+#         'OPTIONS': {
+#                  'driver': 'SQL Server Native Client 10.0',                
+#                  }
+#         },  
+#     }
 
-HHARSWLSQLDEV01 = {
+# HHARSWLSQLDEV01 = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+#         'PORT': '', #'1433',
+#         'NAME': 'HHdev',
+#         'Trusted_Connection': 'yes;',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
+#             'unicode_results': True,
+#         },
+#     },
+# }
+
+# LAPTOP = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+#         'PORT': '', #'1433',
+#         'NAME': 'FredTesting',
+#         'Trusted_Connection': 'yes;',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
+#             'unicode_results': True,
+#             'options': '-c search_path=mydata'
+#         },
+#     },
+# }
+
+HHSWLDEV02 = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
+        'HOST': 'localhost', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
         'PORT': '', #'1433',
-        'NAME': 'HHdev',
-        'Trusted_Connection': 'yes;',
+        'NAME': 'censusapps',
+        'USER': 'hhcensus',
+        'PASSWORD':'Plan-Tree-Scale-Model-Seed-9',
         'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
+            'driver': 'ODBC Driver 17 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
             'unicode_results': True,
+            'options': '-c search_path=census,mydata'
         },
     },
 }
 
-LAPTOP = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
-        'PORT': '', #'1433',
-        'NAME': 'FredTesting',
-        'Trusted_Connection': 'yes;',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
-            'unicode_results': True,
-        },
-    },
-}
-
-DATABASES = LAPTOP
+DATABASES = HHSWLDEV02
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
