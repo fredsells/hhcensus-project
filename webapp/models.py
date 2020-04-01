@@ -55,7 +55,7 @@ class NightlyBedCheck(models.Model):
     LevelOfCare = models.CharField(max_length=50, null=True)
     Gender = models.CharField(max_length=50, null=True)
     CurrentAdmitDate = models.DateTimeField(null=True)
-    Inbed = models.CharField(max_length=50, null=True, blank=True, default='',choices=INBED_CHOICES, verbose_name='inbed')
+    Inbed = models.CharField(max_length=50, null=True, blank=True, default='',choices=INBED_CHOICES)
     Reason = models.CharField(max_length=300, null=True, blank=True, default='', choices=REASON_CHOICES)
     RepDate = models.DateField(null=True)
     Comments = models.CharField(max_length=300, null=True, blank=True, default='')    
@@ -69,7 +69,7 @@ class NightlyBedCheck(models.Model):
         return  self.__str()
 
     def __str__(self):
-        return '{} {} {} {}'.format(self.id, self.Unit, self.Room, self.ResidentName)
+        return '{} {} {} {} {} {}'.format(self.RepDate, self.Unit, self.Room, self.ResidentName, self.Inbed, self.Reason)
         
     class Meta:
         db_table = 'NightlyBedCheck'

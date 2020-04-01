@@ -144,6 +144,8 @@ def save_changes(request):  ###########saves changes to In Bed status page.
             return JsonResponse(context)
         else:
             return HttpResponse('request was not json', request)
+
+
 @record_elapsed_time    
 def monthly_summary(request):
     units=logic_census.get_units()
@@ -157,9 +159,12 @@ def monthly_summary(request):
     ndays = calendar.monthrange(startdate.year, startdate.month)[1]
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdaterange', startdate, enddate, ndays)
-    errors = logic_census.get_errors_by_day_and_unit(startdate, enddate)
-    totals = logic_census.get_error_summary(units, startdate, enddate)
-    context = dict(months=months, selectedmonth=startdate, errors=errors, units=units, totals=totals)
+    Summarizer = logic_census.MonthlySummaryComputer(startdate)
+
+    errors = Summarizer.get_details_by_day_x_unit()
+    print('errors', errors.keys())
+    # totals = logic_census.get_error_summary(units, startdate, enddate)
+    context = dict(months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
     
     return render(request, 'webapp/month_summary.html', context)
     

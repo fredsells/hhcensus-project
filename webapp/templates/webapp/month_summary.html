@@ -52,9 +52,9 @@ function timout()	{
 		
 
 
-<table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">
+<table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableRedAndGreen">
 <thead>
-<tr style="font-weight:bold;background-color:#ECA927" class="tableHeader">	
+<tr style="font-weight:bold;background-color:white" >	
 	<td>Weekday</td>
 	<td>Date</td>
 	{% for unit in units %}
@@ -63,25 +63,35 @@ function timout()	{
 </tr>
 </thead>
 <tbody id="bedcheck">
-{% for item in errors %}
+{% for repdate in errors %}
 	<tr> 
-		<td>{{item.date|date:'l'}}</td>
-		<td> {{item.date|date:'n/j/Y'}}</td>
+		<td style="font-weight:bold;background-color:white">{{repdate|date:'l'}}</td>
+		<td style="font-weight:bold;background-color:white"> {{repdate|date:'n/j/Y'}}</td>
 		{% for unit in units %}
-			<td>{{item|lookup:unit|default_if_none:"" }}</td>
-		{%endfor%}		
+			{% if errors|lookup:repdate|lookup:unit == maxdays %}
+				<td style="background-color:#cc3300"></td>
+			{% elif errors|lookup:repdate|lookup:unit != 0 %}
+				<td style="background-color:red;color:white">{{errors|lookup:repdate|lookup:unit}}</td>
+			{% else %}
+				<td></td>
+			{% endif %}
+		{% endfor %}		
 	</tr>
-{% endfor %}
+{%endfor%}
 
 	<tr class="empty-transparent-row"> <td  class="empty-transparent-row"<div style="background-color:black;"></div></td> </tr>
-	
+	<tr style="background-color:white;color:black;align:center">
+		<td>Summary</td>
+		<td>Total</td>
+		<td colspan="{{units|length}}"> Units </td>
+	</tr>
 	{% for total in totals %}
-	<tr >
+	<tr style="color:white;background-color:{{total|lookup:'background'}};">
 		
-		<td>{{total|lookup:'title'}}</td>
-		<td>{{total|lookup:'total'}}</td>
+		<td style="text-align:right">{{total|lookup:'title'}}</td>
+		<td style="text-align:right;">{{total|lookup:'total'}}</td>
 		{% for unit in units %}
-			<td>{{total|lookup:unit}}</td>
+			<td style="text-align:center;">{{total|lookup:unit}}</td>
 		{% endfor %}
 	</tr>
 	{%endfor%}
