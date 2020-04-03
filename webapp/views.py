@@ -74,29 +74,26 @@ def _update_bed(change, user, now):
     print(errors)
     return True
 
-def get_totals_by_unit(date):
-    beds = NightlyBedCheck.objects.filter(RepDate=date, Inbed='YES').order_by('Unit', 'Room')
-    totals = beds.values('Unit').annotate(total=Count('Unit')).order_by('Unit')
-    results = dict()
-    for total in totals:
-        results[total['Unit']]=total['total']
-    return results
 
-def census_tracking(request):
+
+def census_tracking(request): ###############################################################
     date = request.GET.get("date", None) 
     if date:
-        date = datetime.datetime.strptime(date, '%m/%d/%Y')
+        date = datetime.datetime.strptime(date, '%m/%d/%Y').date()
     else:
         date = datetime.date.today()
-    print('census tracking', date)
-    beds = NightlyBedCheck.objects.filter(RepDate=date).exclude(ResidentName=None).order_by('Unit', 'Room', )
-    print( len(beds) )
-    for bed in beds: print(bed)
-    totals_by_unit = get_totals_by_unit(date)
-    pairs = totals_by_unit.items()
-    context = dict(date=date, beds=beds, totals=pairs)
+    residents = NightlyBedCheck.objects.filter(RepDate=date).exclude(ResidentName='').order_by('Unit', 'Room', )
+    NotYes = residents.exclude(Inbed='YES')
+    InbedBlank = NotYes.filter(Inbed='')
+    InbedNoReasonBlank = NotYes.filter(Inbed='No', Reason='')
+    errors = InbedBlank | InbedNoReasonBlank
+    errors.order_by('unit', 'Room')
+    totals = residents.values_list('Unit').annotate(total=Count('Unit')).order_by('Unit')
+    context = dict(date=date, beds=errors, totals=totals)
     return render(request, 'webapp/censustracking.html', context)
         
+
+
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
     if request.method=='GET':

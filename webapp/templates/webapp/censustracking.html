@@ -9,17 +9,13 @@
 		//setTimeout("timout()", 60000 * 5);		
 		console.log("started");
 
-$(".datepicker").datepicker({
-   onSelect: function(dateText, inst) { 
-						      var dateAsString = dateText; //the first parameter of this function
-						      var dateAsObject = $(this).datepicker( 'getDate' ); //the getDate method
-console.log("onSelect");
-							  console.log(dateAsString);
-							  console.log(dateAsObject);
-							$(this).datepicker("setDate", dateText);
-							location.href = "census_tracking?date="+dateText;
-						   }
+$('#census-tracking-datepicker').datepicker({
+								    onSelect: function(dateText, inst){
+										dateFormat: "dd/mm/yyyy",
+										location.href = "census_tracking?date="+dateText;
+									}
 });		
+
       
    }); //-------------------end init
 
@@ -51,7 +47,7 @@ function printthis() {
 
 <div id="top"  >
 
-<div class="datepicker"  ></div>
+<div id="census-tracking-datepicker"  ></div>
 <div style="height:20px;"> </div>
 	
 <span  class="big-black-box" id="datepicked"> {{date}} </span>
@@ -85,7 +81,7 @@ function printthis() {
 <tbody id="bedcheck">
 {% for bed in beds %}
 	<tr> 
-		<td>{{bed.unit}}</td>
+		<td>{{bed.Unit}}</td>
 		<td> {{bed.Room}}</td>
 		
 			<td class="name">{{bed.ResidentName}}</td>

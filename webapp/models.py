@@ -4,6 +4,8 @@ from django.utils import timezone
 #from rest_framework import serializers
 # Create your models here.
 from django.db import models
+from django.db.models import Lookup
+from django.db.models.fields import Field
 from unittest.util import _MAX_LENGTH
 import os
 
@@ -12,12 +14,18 @@ from django.db import connection
 from webapp import utilities
 from hhcensus import settings
 
-def ooooooooooooooooooooooooooooooooooooget_all_patients_from_mydata():
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM dbo.mydataPatient ORDER BY LastName, FirstName")
-        rows = cursor.fetchall()
-    return rows
-#@utilities.record_elapsed_time
+class NotEqual(Lookup):
+    lookup_name = 'ne'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
+
+Field.register_lookup(NotEqual)
+
 def get_all_beds():
     with connection.cursor() as cursor:
         cursor.execute("SELECT UnitName+'-'+RoomAndBed [Bed] FROM dbo.mydataBed ORDER BY UnitName, RoomAndBed")
