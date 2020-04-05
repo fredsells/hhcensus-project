@@ -31,14 +31,9 @@ def get_units( obsolete=0, date=None):
 
 def get_beds(unit, repdate=None):
     date = repdate or datetime.date.today()
-    queryset = models.NightlyBedCheck.objects.filter(RepDate=date, Unit=unit).order_by('Unit', 'Room')
-    for bed in queryset:
-        if bed.Inbed not in ('Yes', 'No') and bed.ResidentName != '':
-            print ('bed', bed.Unit, bed.Room, bed.Inbed, bed.ResidentName, bed.RepDate, date)
-    return queryset
+    return models.NightlyBedCheck.objects.filter(RepDate=date, Unit=unit).order_by('Unit', 'Room')
 
 class MonthlySummaryComputer(object):
-    @utilities.record_elapsed_time
     def __init__(self, startdate):
         # self.units=get_units()
         ndays = calendar.monthrange(startdate.year, startdate.month)[1]
