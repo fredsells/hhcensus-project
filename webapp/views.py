@@ -108,15 +108,15 @@ def census_edit(request):
         unit = request.GET.get('unit', DEFAULT_UNIT)
 
         print ('processing GET for', unit)
-        beds = logic_census.get_beds(unit, obsolete=0)
+        beds = logic_census.get_beds(unit)
         for bed in beds:
-            print(bed)
+            #print(bed)
             if bed.CurrentAdmitDate == None: continue #nobody in the bed
             bed.CurrentAdmitDate = bed.CurrentAdmitDate.strftime('%#m/%#d/%Y')
 #        beds = beds[25:30]  #good test data
         maxdate = datetime.date.today()
         context = dict(user='frederick.sells', 
-                       
+                       unit = unit,
                        units=logic_census.get_units(),
                        inbed_choices = INBED_CHOICES, 
                        reason_choices = REASON_CHOICES,

@@ -10,7 +10,6 @@ var page_loaded = false;
 
  $( function() {
 		//setTimeout("timout()", 60000 * 5);		
-		console.log("started");
 		page_loaded = true;
 			$("#bedcheck > tr.occupied").each( function(){  //if no person in bed, data-changed remains "No"
 				var inbed = $(this).find(".inbed").children("option:selected").val();
@@ -26,7 +25,7 @@ var page_loaded = false;
 					$(this).find(".reason").prop("disabled", changes.disabled);
 					$(this).find(".comment").prop("disabled", changes.disabled);
 				}
-				console.log(changes)
+				//console.log(changes)
 
 	});
       
@@ -35,7 +34,7 @@ var page_loaded = false;
 
 function something_changed(item){
 	var row = $(item).closest("tr");
-	console.log("changed " +$(row).attr("id"));
+	//console.log("changed " +$(row).attr("id"));
 	$(row).attr("data-changed", "Yes")
 }
 
@@ -100,7 +99,7 @@ function validate_form() {
 				changes.inbed = inbed;
 				changes.reason=$(this).find(".reason").children("option:selected").val();
 				changes.comment=$(this).find(".comment").val();
-				console.log(changes);
+				//console.log(changes);
 				patients.push(changes);
 			
 		
@@ -117,7 +116,7 @@ function validate_form() {
       processData: false,      
 	  data: JSON.stringify({unit:unit, patients:patients} ),
       success: function (jsonresponse) {  
-		console.log(jsonresponse);
+		//console.log(jsonresponse);
 		console.log(jsonresponse['unit']);
 	    x = JSON.stringify(jsonresponse)     ; 
 		location.href="census_edit?unit="+unit+"&dummy="+Date()+'"';//dont use date, need to prevent cache
@@ -199,9 +198,10 @@ function logout() {
 		</tr>
 		<tr>
 			<td class="frm_label">	Unit:	</td>
-			<td>
+			<td> 
 				<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
 					{% for item in units %}
+						
 						<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
 					{% endfor %}
 				</select>
@@ -260,11 +260,11 @@ function logout() {
 			<td> {{bed.CurrentAdmitDate}}</td>
 			<td> {{bed.CensusStatus}}</td>
 			<td> {{bed.LevelOfCare}}</td>
-			<td>
+			<td> 
 			<select class="inbed" id="inbed{{bed.id}}" name="inbed{{bed.id}}" onchange="inbed_changed(this)">
 					{% for item in inbed_choices %}
 						<option value="{{item.1}}" 
-						{% if item.1 == bed.Inbed %}selected="selected"{% endif %}>
+						{% if item.1 == bed.Inbed %} selected="selected" {% endif %}>
 						{{item.1}}
 						</option>
 					{% endfor %}

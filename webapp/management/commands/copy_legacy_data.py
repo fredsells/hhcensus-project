@@ -51,6 +51,7 @@ def get_old_data(Connection, start, end):
                 LEFT JOIN [dbo].[PositiveCensusReportUsers] AS users 
                     ON logins.PositiveCensusReportUserID=users.PositiveCensusReportUserID
                 WHERE pcr.RepDate BETWEEN '{}' AND '{}'
+                AND pcr.Unit NOT IN ('M1', 'M2', 'MM')
                 ORDER BY pcr.RepDate, Unit, Room;
         '''
     sql = sql.format(start, end)
