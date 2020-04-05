@@ -1,11 +1,11 @@
 {% extends 'webapp/base.html' %}
 
-
 {% block content %}
 <body width="90%">
 
 <script type="text/javascript">
-//var current_unit='G1';
+
+
 var page_loaded = false;
 
  $( function() {
@@ -120,11 +120,6 @@ function validate_form() {
 		console.log(jsonresponse);
 		console.log(jsonresponse['unit']);
 	    x = JSON.stringify(jsonresponse)     ; 
-		console.log('ajax success ');
-		console.log(x);
-		console.log(x.unit);
-		console.log(x['unit']);
-		//location.reload(true);
 		location.href="census_edit?unit="+unit+"&dummy="+Date()+'"';//dont use date, need to prevent cache
       },
 	  failure: function(errMsg) { alert(errMsg);}
@@ -245,7 +240,7 @@ function logout() {
 </thead>
 <tbody id="bedcheck">
 {% for bed in beds %}
-	<tr id="{{bed.id}}" data-changed="No"  {% if bed.lastname != None %}
+	<tr id="{{bed.id}}" data-changed="No"  {% if bed.ResidentNumber != '' %}
 												class="occupied"
 											{% else %}
 												class="not-occupied"
@@ -258,7 +253,7 @@ function logout() {
 		<td> {{bed.Room}} </td>
 					
 
-		{% if bed.ResidentName != None %}
+		{% if bed.ResidentName != '' %}
 			<td class="name">{{bed.ResidentName}}</td>
 			<td class="mrn"> {{bed.ResidentNumber}}</td>
 			<td class="{{bed.Gender}}"> {{bed.Gender}}</td>

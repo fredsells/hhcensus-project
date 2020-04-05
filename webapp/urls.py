@@ -22,6 +22,7 @@ urlpatterns = [
     path('census_tracking', views.census_tracking, name='census_tracking'),
     path('monthly_summary', views.monthly_summary, name='monthly_summary'),
     path('notifications', views.notifications, name='notifications'),
+    path('resident_location', views.resident_location, name='resident_location'),
     path('save_changes', views.save_changes, name='save_changes'),
     path('home', views.home, name='home'),
     path('logout', views.logout, name='logout'),

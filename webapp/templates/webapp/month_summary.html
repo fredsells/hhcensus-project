@@ -71,7 +71,7 @@ function timout()	{
 			{% if errors|lookup:repdate|lookup:unit == maxdays %}
 				<td style="background-color:#cc3300"></td>
 			{% elif errors|lookup:repdate|lookup:unit != 0 %}
-				<td style="background-color:red;color:white">{{errors|lookup:repdate|lookup:unit}}</td>
+				<td style="background-color:red;color:white">{{errors|lookup:repdate|lookup:unit|default_if_none:''}}</td>
 			{% else %}
 				<td></td>
 			{% endif %}

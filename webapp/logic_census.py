@@ -24,7 +24,7 @@ DEBUG = False
 ONEDAY = datetime.timedelta(days=1)
 
 def get_units( obsolete=0, date=None): 
-    units = models.NightlyBedCheck.objects.filter(Obsolete=obsolete).order_by('Unit').values_list('Unit', flat=True).distinct()
+    units = models.NightlyBedCheck.objects.order_by('Unit').values_list('Unit', flat=True).distinct()
     return list(units)
 
 
@@ -125,7 +125,7 @@ def get_units( obsolete=0, date=None):
 #     return patients
 
 
-def get_beds(unit, obsolete=0, date=None):
+def get_beds(unit, obsolete=0):
     queryset = models.NightlyBedCheck.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
     return queryset
 

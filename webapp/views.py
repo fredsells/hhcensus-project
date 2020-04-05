@@ -54,10 +54,7 @@ def home(request):
     return render(request, 'webapp/home.html', context)
         
 
-# def get_beds(unit='G1', obsolete=0, date=None):
-#     queryset = NightlyBedCheck.objects.filter(Obsolete=obsolete, Unit=unit).order_by('Unit', 'Room')
-#     return queryset
-    
+
      
 def logout(request):
     return render(request, 'webapp/logout.html', {})    
@@ -92,12 +89,24 @@ def census_tracking(request): ##################################################
     context = dict(date=date, beds=errors, totals=totals)
     return render(request, 'webapp/censustracking.html', context)
         
+def resident_location(request):
+    unit = request.GET.get('unit', DEFAULT_UNIT)
+    date = datetime.date.today()
+    beds = logic_census.get_beds(unit, obsolete=0)
+    context = dict(user='frederick.sells', 
+                    unit=unit, 
+                    units = logic_census.get_units(),
+                    beds = beds,
+                    repdate = beds[0].RepDate
+                    )
+    return render(request, 'webapp/resident_location.html', context)
 
 
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
     if request.method=='GET':
         unit = request.GET.get('unit', DEFAULT_UNIT)
+
         print ('processing GET for', unit)
         beds = logic_census.get_beds(unit, obsolete=0)
         for bed in beds:
@@ -107,7 +116,7 @@ def census_edit(request):
 #        beds = beds[25:30]  #good test data
         maxdate = datetime.date.today()
         context = dict(user='frederick.sells', 
-                       unit=unit, 
+                       
                        units=logic_census.get_units(),
                        inbed_choices = INBED_CHOICES, 
                        reason_choices = REASON_CHOICES,
