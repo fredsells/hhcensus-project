@@ -14,13 +14,14 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Count, Max, Avg, Sum, F
 from django.db.models.functions import Lower
 from django.db import connection
+from django.conf import settings
 
 from webapp import models
 from webapp import utilities
 from setuptools._vendor.six import _meth_self
 
 
-DEBUG = False
+DEBUG = settings.DEBUG
 ONEDAY = datetime.timedelta(days=1)
 
 def get_units( obsolete=0, date=None): 
@@ -33,17 +34,13 @@ def get_beds(unit, repdate=None):
     date = repdate or datetime.date.today()
     return models.NightlyBedCheck.objects.filter(RepDate=date, Unit=unit).order_by('Unit', 'Room')
 
-class MonthlySummaryComputer(object):
+class MonthlySummaryComputer(object):  #red/green grid
     def __init__(self, startdate):
-        # self.units=get_units()
         ndays = calendar.monthrange(startdate.year, startdate.month)[1]
         enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdaterange', startdate, enddate, ndays)
         queryset = models.NightlyBedCheck.objects.filter(RepDate__range=[startdate, enddate]).order_by('RepDate', 'Unit')
         units = queryset.order_by('Unit').values_list('Unit', flat=True).distinct()
         repdates =  queryset.order_by('RepDate').values_list('RepDate', flat=True).distinct()
-        #print(len(queryset), units)
-        #print (repdates)
         zeroes = [0] * len(units)
         grid = self.get_empty_grid(repdates, units)
         grid = self.populate_grid(grid, queryset)
@@ -51,8 +48,6 @@ class MonthlySummaryComputer(object):
         self.units_with_errors = dict(zip(units, zeroes))
         self.total_days_with_nothing_done_by_unit = dict(zip(units, zeroes))
         self.get_totals(units, grid)
-        print('errors', self.units_with_errors)
-        print('nonedone', self.total_days_with_nothing_done_by_unit)
 
     def get_empty_grid(self, repdates, units):
         grid = {}
