@@ -53,24 +53,19 @@ def home(request):
     context = {}
     return render(request, 'webapp/home.html', context)
         
-
-
      
 def logout(request):
     return render(request, 'webapp/logout.html', {})    
 
 def _update_bed(change, user, now):
     bed = NightlyBedCheck.objects.get(pk=change.id)
-    print (bed)
     bed.inbed=change.inbed
     bed.reason=change.reason
     bed.comment=change.comment
     bed.updatedby = user
     bed.updatetime = now
     errors = bed.save()
-    print(errors)
     return True
-
 
 
 def census_tracking(request): ###############################################################
@@ -92,7 +87,7 @@ def census_tracking(request): ##################################################
 def resident_location(request):
     unit = request.GET.get('unit', DEFAULT_UNIT)
     date = datetime.date.today()
-    beds = logic_census.get_beds(unit, obsolete=0)
+    beds = logic_census.get_beds(unit, )
     context = dict(user='frederick.sells', 
                     unit=unit, 
                     units = logic_census.get_units(),
@@ -106,14 +101,10 @@ def resident_location(request):
 def census_edit(request):
     if request.method=='GET':
         unit = request.GET.get('unit', DEFAULT_UNIT)
-
-        print ('processing GET for', unit)
         beds = logic_census.get_beds(unit)
         for bed in beds:
-            #print(bed)
             if bed.CurrentAdmitDate == None: continue #nobody in the bed
             bed.CurrentAdmitDate = bed.CurrentAdmitDate.strftime('%#m/%#d/%Y')
-#        beds = beds[25:30]  #good test data
         maxdate = datetime.date.today()
         context = dict(user='frederick.sells', 
                        unit = unit,
@@ -122,9 +113,8 @@ def census_edit(request):
                        reason_choices = REASON_CHOICES,
                        beds=beds, 
                        sweepdate = maxdate.strftime('%A -  %B %#d, %Y'))
-        x = render(request, 'webapp/bedcheck.html', context)
-        return x
-    
+        return render(request, 'webapp/bedcheck.html', context)
+
 
 @csrf_exempt
 def save_changes(request):  ###########saves changes to In Bed status page.
@@ -136,7 +126,6 @@ def save_changes(request):  ###########saves changes to In Bed status page.
             unit = data.get('unit', 'xxx' )
             patients = data.get('patients', [])
             for p in patients: 
-                print('json', p)
                 bed = NightlyBedCheck.objects.get(pk=p['id'])
                 bed.Inbed=p['inbed']
                 bed.Reason=p['reason']
@@ -144,15 +133,12 @@ def save_changes(request):  ###########saves changes to In Bed status page.
                 bed.UpdatedByName = user
                 bed.UpdateDatetime=now
                 bed.save()###update_fields=['Inbed', 'Reason', 'Comments', 'UpdatedByName', 'UpdateDatetime'])
-                print('saved {}'.format(bed))
-
             context = {'comment': 'update successful'}
             return JsonResponse(context)
         else:
             return HttpResponse('request was not json', request)
 
 
-@record_elapsed_time    
 def monthly_summary(request):
     units=logic_census.get_units()
     this_month = datetime.date.today().replace(day=1)
@@ -164,14 +150,9 @@ def monthly_summary(request):
         startdate = this_month
     ndays = calendar.monthrange(startdate.year, startdate.month)[1]
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdaterange', startdate, enddate, ndays)
     Summarizer = logic_census.MonthlySummaryComputer(startdate)
-
     errors = Summarizer.get_details_by_day_x_unit()
-    print('errors', errors.keys())
-    # totals = logic_census.get_error_summary(units, startdate, enddate)
     context = dict(months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
-    
     return render(request, 'webapp/month_summary.html', context)
     
     
