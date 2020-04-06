@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import platform
 import socket
-print (socket.getfqdn() )
+#print (socket.getfqdn() )
 
 EMAIL_HOST = 'smtp.hebrewhome.org'
 #EMAIL_PORT = 587  #for secure, use 25 for non secure.
