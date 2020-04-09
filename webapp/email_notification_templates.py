@@ -95,9 +95,7 @@ ERROR = '''<meta http-equiv="Content-Type" content="text/html; charset=us-ascii"
 
 def get_subject_and_body(values):
     template =  TemplateLookup.get(values['action'], ERROR) #if action does not exist in lookup keys, returns ERROR template
-    timestamp = values['timestamp']
-    #values['date'] = timestamp.strftime('%m/%d/%Y')
-    #values['time']= timestamp.strftime('%I:%M %p')
+    #timestamp = values['timestamp']
     body = template.format(**values)
     subject = 'Census Notification: {action}'.format(**values)
     return (subject, body)

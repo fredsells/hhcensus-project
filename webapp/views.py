@@ -132,7 +132,7 @@ def save_changes(request):  ###########saves changes to In Bed status page.
                 bed.Comments=p['comment']
                 bed.UpdatedByName = user
                 bed.UpdateDatetime=now
-                bed.save()###update_fields=['Inbed', 'Reason', 'Comments', 'UpdatedByName', 'UpdateDatetime'])
+                bed.save()
             context = {'comment': 'update successful'}
             return JsonResponse(context)
         else:
