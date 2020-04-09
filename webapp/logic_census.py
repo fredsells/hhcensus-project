@@ -24,7 +24,7 @@ from setuptools._vendor.six import _meth_self
 DEBUG = settings.DEBUG
 ONEDAY = datetime.timedelta(days=1)
 
-def get_units( obsolete=0, date=None): 
+def get_units( ): 
     units = models.NightlyBedCheck.objects.order_by('Unit').values_list('Unit', flat=True).distinct()
     return list(units)
 

@@ -1,14 +1,16 @@
 '''
 Created on Jul 10, 2019
 
+This is a Django command that copies data from HHARWEB2 to the local database
+it is used to load historical data from the legacy system to the new system 
+to support both testing and historical analysis.
+
 @author: fsells
 '''
 import pyodbc
 import datetime
 from django.core.management.base import BaseCommand, CommandError
 
-
-DEBUG = True
 
 HHARWEB2 = (r'DSN=copybedchecks32;'
             r'UID=copybedchecks;'
@@ -37,10 +39,7 @@ CONNECTIONS = dict (dev=HHSWLDEV02, prod=None)
 ONE_HOUR = datetime.timedelta(hours=1)
 
 def get_old_data(Connection, start, end):
-    #Connection = pyodbc.connect(conn_str)
     Cursor = Connection.cursor()
-    #Cursor.execute('SET NOCOUNT ON')
-    #Connection.commit()
     sql = '''
              SELECT pcr.Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare,Gender
                       ,OrigAdmitDate,  YesNo, Reason, RepDate, Comments
@@ -55,7 +54,6 @@ def get_old_data(Connection, start, end):
                 ORDER BY pcr.RepDate, Unit, Room;
         '''
     sql = sql.format(start, end)
-    print (sql)
     Cursor.execute(sql)
     rows = Cursor.fetchall()
     Cursor.close()
@@ -63,10 +61,8 @@ def get_old_data(Connection, start, end):
     return rows
 
 def insert_data(Connection, data):
-    #Connection = pyodbc.connect(conn_str)
     Cursor = Connection.cursor()
     Cursor.execute('SET NOCOUNT ON')
-    #Cursor.execute('SET IDENTITY_INSERT dbo.PositiveCensusReport  ON')
     Connection.commit()
     sql = '''INSERT  dbo.NightlyBedCheck
                   (Unit ,Room  ,ResidentNumber ,ResidentName
@@ -82,24 +78,23 @@ def insert_data(Connection, data):
 
 def execute(source, destination, startdate, enddate, save):
     data = get_old_data(source, startdate, enddate)
-    print('nrecords=', len(data))
     if save:
         insert_data(destination, data)
-        print ('data inserted into target')
+        print ('%s records inserted  into target database'. (len(data),))
     else:
-        for x in data[:9]: print('census', x)
+        for x in data[:9]: print('census:', x)
         print('DEBUG=True, no data written to DB')
 
-    print ('done')
+
 
 class Command(BaseCommand):
-    help = 'copies census data from HHARWEB2 PositiveCensusReport to local/prod NightlyBedCheck'
-
+    help = 'USEAGE: python copy_legacy_data start=4/7/2020 --end=4/9/2020 [--save]'
+              
     def add_arguments(self, parser):
-        parser.add_argument('--start', action= 'store', help = 'first day of sweep mm/dd/yyyy, for testing',
+        parser.add_argument('--start', action= 'store', help = 'first day of copy mm/dd/yyyy',
                             type=lambda s: datetime.datetime.strptime(s, '%m/%d/%Y'),
                             default = datetime.date.today())
-        parser.add_argument('--end', action= 'store', help = 'first day of sweep mm/dd/yyyy, for testing',
+        parser.add_argument('--end', action= 'store', help = 'last day of copy mm/dd/yyyy',
                             type=lambda s: datetime.datetime.strptime(s, '%m/%d/%Y'),
                             default = datetime.date.today())
 
@@ -108,8 +103,6 @@ class Command(BaseCommand):
         parser.add_argument('--save', action= 'store_true', help = 'required to write data to target', default=False)
         
 
-
-
     def handle(self, *args, **options):
         sourcestring = HHARWEB2
         targetname = options['target']
@@ -117,8 +110,6 @@ class Command(BaseCommand):
         startdate = options['start']
         enddate = options['end']
         save = options['save']
-        print(options)
-        print (targetname, startdate, enddate, save, targetstring)
         source = pyodbc.connect(sourcestring)
         target = pyodbc.connect(targetstring)
         execute(source, target, startdate, enddate, save)
