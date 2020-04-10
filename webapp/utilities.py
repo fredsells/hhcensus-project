@@ -4,7 +4,7 @@ Created on Dec 28, 2019
 @author: fsells
 '''
 
-import time, sys               
+import time, sys , datetime, calendar, os             
 
 class DataObject:
     def __init__(self, kwargs):
@@ -36,8 +36,25 @@ def testor(n):
         x = i**i
     return 'done'
 
+def get_list_of_dates_for_first_of_month(startingdate=None, number_of_months=12):
+    date = startingdate or datetime.date.today()
+    date = datetime.date(year=date.year, month=date.month, day=1)
+    dates = [date]
+    year = date.year
+    month = date.month
+    for i in range(number_of_months):
+        month = month - 1  #note the first time i = 0
+        if month==0:
+            year -= 1
+            month = 12
+        date = datetime.date(year=year, month=month, day=1)
+        dates.append(date)
+    return dates
+
+
+
 def unittest():
-    results = testor(1000)
+    results = get_list_of_dates_for_first_of_month()
     print(results)
     
 if __name__=='__main__':
