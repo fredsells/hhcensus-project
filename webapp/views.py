@@ -159,8 +159,8 @@ def monthly_summary(request):
 ###############################################################################################
 
 def notifications(request):
-    TEMPLATE = 'webapp/testform.html'
-    USER='frederick.sells'
+    TEMPLATE = 'webapp/notifications.html'
+    USER='unknown need AD'
     FORM_CLASS = forms.CensusChangeForm
     if request.method == 'POST':
         values =  dict(request.POST.items())
@@ -174,12 +174,8 @@ def notifications(request):
         record = CensusChangeLog(**values)
         record.save()
         return redirect('/webapp/notifications')
-#         form = form_class(request.POST)
-#         if form.is_valid():
-#             pass  # does nothing, just trigger the validation
-#             print('posting form', form)
+
     else:  ####################################  GET method ##################################
-        print('processing GET', request)
         action = request.GET.get('action', '0')
         if action == None:
             return render(request, TEMPLATE)

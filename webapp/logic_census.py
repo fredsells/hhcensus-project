@@ -5,12 +5,9 @@ web api
  Author: Fred Sells  10/29/2019
  '''
 
-
-
 import sys, os, datetime, random, calendar, itertools
 
-
-from dateutil.relativedelta import relativedelta
+####################################from dateutil.relativedelta import relativedelta
 from django.db.models import Count, Max, Avg, Sum, F
 from django.db.models.functions import Lower
 from django.db import connection
@@ -21,14 +18,20 @@ from webapp import utilities
 from setuptools._vendor.six import _meth_self
 
 
-DEBUG = settings.DEBUG
+DEBUG = settings.DEBUG  #not used, but need to know how to get it if using DEBUG in settings
 ONEDAY = datetime.timedelta(days=1)
+
+def get_latest_repdate():
+    results = models.NightlyBedCheck.objects.all().aggregate(Max('RepDate'))#.values_list('RepDate', flat=True).distinct()
+    return results['RepDate__max']
+
+
+
+######################################################################print( 'atest', get_latest_repdate())
 
 def get_units( ): 
     units = models.NightlyBedCheck.objects.order_by('Unit').values_list('Unit', flat=True).distinct()
     return list(units)
-
-
 
 def get_beds(unit, repdate=None):
     date = repdate or datetime.date.today()
@@ -52,18 +55,15 @@ class MonthlySummaryComputer(object):  #red/green grid
     def get_empty_grid(self, repdates, units):
         grid = {}
         zeroes = [0] * len(units)
-        for date in repdates:
-                grid[date]=dict(zip(units, zeroes))
+        for date in repdates: grid[date]=dict(zip(units, zeroes))
         return grid
 
     def populate_grid(self, grid, queryset):
         residents = queryset.exclude(ResidentName='').exclude( Inbed='YES')
-        #residents = residents.filter(Unit='GL')  #simplify for testing
         for x in residents:
             if (x.Inbed=='') or (x.Inbed=='No' and x.Reason != ''): 
                 pass
             else:
-                print('resident',x.ResidentName, x.RepDate, x.Unit, x.Inbed, x.Reason)
                 grid[x.RepDate][x.Unit] += 1
         return grid
     
@@ -100,7 +100,4 @@ class MonthlySummaryComputer(object):  #red/green grid
     def get_details_by_day_x_unit(self):
         return self.grid
  
-           
 
-
-    
