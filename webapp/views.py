@@ -86,13 +86,13 @@ def census_tracking(request): ##################################################
         
 def resident_location(request):
     unit = request.GET.get('unit', DEFAULT_UNIT)
-    date = datetime.date.today()
-    beds = logic_census.get_beds(unit, )
+    date = request.GET.get('date', datetime.date.today() )
+    beds = logic_census.get_beds(unit, date)
     context = dict(user='frederick.sells', 
                     unit=unit, 
                     units = logic_census.get_units(),
                     beds = beds,
-                    repdate = beds[0].RepDate
+                    repdate = date
                     )
     return render(request, 'webapp/resident_location.html', context)
 

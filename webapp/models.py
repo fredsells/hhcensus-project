@@ -14,6 +14,7 @@ from django.db import connection
 from webapp import utilities
 from hhcensus import settings
 
+@Field.register_lookup
 class NotEqual(Lookup):
     lookup_name = 'ne'
 
@@ -24,7 +25,6 @@ class NotEqual(Lookup):
         return '%s <> %s' % (lhs, rhs), params
 
 
-Field.register_lookup(NotEqual)
 
 def get_all_beds():
     with connection.cursor() as cursor:
@@ -71,13 +71,20 @@ class NightlyBedCheck(models.Model):
     UpdatedByName = models.CharField(max_length=80, null=True, blank=True, default='', db_column='UpdateByName')
     UpdateDatetime =models.DateTimeField(null=True,  db_column='UpdateDatetime')
     Obsolete = models.IntegerField(default = 0)
+
+
+    # @property
+    # def has_error(self):
+    #     #error = False
+    #     return self.ResidentNumber <> '' and (self.Inbed == ''  or (self.Inbed=='No' and self.Reason=''))
+    #     #if self.ResidentName == ''  or self.Inbed='Yes' : return False
     
 
     def __unicode__(self):
         return  self.__str()
 
     def __str__(self):
-        return '{} {} {} {} {} {}'.format(self.RepDate, self.Unit, self.Room, self.ResidentName, self.Inbed, self.Reason)
+        return '{} {} {} {} Inbed="{}" reason="{}", comments="{}"'.format(self.RepDate, self.Unit, self.Room, self.ResidentName, self.Inbed, self.Reason, self.Comments)
         
     class Meta:
         db_table = 'NightlyBedCheck'

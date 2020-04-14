@@ -101,3 +101,11 @@ class MonthlySummaryComputer(object):  #red/green grid
         return self.grid
  
 
+def get_errors(unit=None, startdate=None, enddate=None):
+    start = startdate or datetime.date.today()  #today if not specified
+    end   = enddate or start  #startdate if not specified
+    queryset = models.NightlyBedCheck.objects.filter(RepDate__range=(start,end)).exclude(Inbed='Yes').exclude(ResidentName='')
+    if unit:
+        queryset = queryset.filter(Unit=unit)
+    queryset = queryset.exclude(Inbed='NO', Reason__ne='').order_by('Unit', 'Room') #Inbed=blank or Inbed=No and Reason=Blank.
+    return queryset.values()  #returns data entry errors.

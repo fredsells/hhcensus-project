@@ -29,6 +29,8 @@ DATE_INPUT_FORMATS = ['%Y-%m-%d'] #'%d-%m-%Y', '%m/%d/%Y',
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+   ########################################################################### 'computed_property',
     'webapp',
     'webapp.templatetags.app_filters',
 ]

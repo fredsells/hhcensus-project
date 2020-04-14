@@ -80,7 +80,7 @@ def execute(source, destination, startdate, enddate, save):
     data = get_old_data(source, startdate, enddate)
     if save:
         insert_data(destination, data)
-        print ('%s records inserted  into target database'. (len(data),))
+        print ('%s records inserted  into target database' % (len(data),))
     else:
         for x in data[:9]: print('census:', x)
         print('DEBUG=True, no data written to DB')
