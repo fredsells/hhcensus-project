@@ -25,6 +25,7 @@ urlpatterns = [
     path('resident_location', views.resident_location, name='resident_location'),
     path('save_changes', views.save_changes, name='save_changes'),
     path('home', views.home, name='home'),
+    path('daily_details', views.daily_details, name='daily_details'),
     path('logout', views.logout, name='logout'),
 
 

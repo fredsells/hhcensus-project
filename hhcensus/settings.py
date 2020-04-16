@@ -39,6 +39,7 @@ SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+BED_STATUS_LOCK_HOUR = 8  #becomes 8:00 am
 
 ALLOWED_HOSTS = ['*']
 

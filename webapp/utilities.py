@@ -4,7 +4,9 @@ Created on Dec 28, 2019
 @author: fsells
 '''
 
-import time, sys , datetime, calendar, os             
+import time, sys , datetime, calendar, os       
+
+
 
 class DataObject:
     def __init__(self, kwargs):
@@ -51,12 +53,18 @@ def get_list_of_dates_for_first_of_month(startingdate=None, number_of_months=12)
         dates.append(date)
     return dates
 
+def is_bedcheck_editing_allowed(hour=None):
+    hour = hour or 8  #allows you to specify hour for testing, otherwise 8 am.
+    now = datetime.datetime.now()
+    d = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+    return now <= d
 
 
 def unittest():
-    results = get_list_of_dates_for_first_of_month()
+    results = is_bedcheck_editing_allowed(9)
     print(results)
     
 if __name__=='__main__':
+
     unittest()    
     

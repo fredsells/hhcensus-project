@@ -1,46 +1,18 @@
 import pyodbc
 import datetime
-import platform
 
 
-PRODUCTION = (r'DRIVER={SQL Server};'
-            r'SERVER=HHARWEB2\SQLEXPRESS;'
-            r'DATABASE=PositiveCensusReport;'
-            r'Trusted_Connection=yes;'    )
-
-TEST = (r'DRIVER={SQL Server};'
-            r'SERVER=HHARWEB2\SQLEXPRESS;'
-            r'DATABASE=PositiveCensus_Test;'
-            r'Trusted_Connection=yes;'    )
-
-HHSWLSQLDEV01 = (r'DRIVER={SQL Server};'
-                r'SERVER=HHSWLSQLDEV01;'
-                r'DATABASE=FredTesting;'
-                r'Trusted_Connection=yes;'    )
-
-LAPTOP_SQL= (
-        r'DRIVER={SQL Server};'
-        r'SERVER=.;'
-        r'DATABASE=HHdev;'
-        r'Trusted_Connection=yes;'
-    )
-
-if platform.uname().node == 'PS-6KR5WF2':
-    conn_str = LAPTOP_SQL
-else:
-    conn_str = PRODUCTION
-
-YESNO = ''
+Inbed = ''
 REASON= ''
 COMMENTS = ''
 
 
 def reformat(row, rptdate):
     (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, AdmitDate) = row
-    cleanup = (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, AdmitDate, YESNO, REASON,  rptdate, COMMENTS)
+    cleanup = (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender, AdmitDate, Inbed, REASON,  rptdate, COMMENTS)
     return cleanup
 
-def insert_bed_occupancy( beds, rptdate):
+def insert_bed_occupancy(conn_str,  beds, rptdate):
     beds = [reformat(bed, rptdate) for bed in beds[1:]] #drop header row
     ##################################for d in data: print('insert', d)
     Connection = pyodbc.connect(conn_str)
@@ -50,7 +22,7 @@ def insert_bed_occupancy( beds, rptdate):
     Connection.commit()
     sql = '''INSERT INTO dbo.PositiveCensusReport 
               (Unit, Room, ResidentNumber, ResidentName, Status, LevelOfCare, Gender
-              , OrigAdmitDate, YesNo, Reason, RepDate, Comments)
+              , OrigAdmitDate, Inbed, Reason, RepDate, Comments)
               VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
     Cursor.executemany(sql, beds)
     Connection.commit()
@@ -70,6 +42,4 @@ def unittest():
 
 if __name__ == '__main__':
     unittest()
-    #DB = HHDB()
-    #DB.mark_all_obsolete()
     print ('done')

@@ -27,6 +27,7 @@ from django.contrib.auth.decorators import permission_required
 
 from .models import NightlyBedCheck, INBED_CHOICES, REASON_CHOICES, CensusChangeLog
 from webapp import logic_census
+from webapp import utilities
 from webapp import sql_api 
 from webapp import forms
 from . import sql_api
@@ -113,11 +114,12 @@ def census_edit(request):
                        reason_choices = REASON_CHOICES,
                        beds=beds, 
                        sweepdate = maxdate.strftime('%A -  %B %#d, %Y'))
-        return render(request, 'webapp/bedcheck.html', context)
+        return render(request, 'webapp/censusedit.html', context)
 
 
 @csrf_exempt
 def save_changes(request):  ###########saves changes to In Bed status page.
+    if utilities.is_bedcheck_editing_allowed():
         user = 'fredtest'
         now = datetime.datetime.now()
         if request.is_ajax(): 
@@ -137,6 +139,8 @@ def save_changes(request):  ###########saves changes to In Bed status page.
             return JsonResponse(context)
         else:
             return HttpResponse('request was not json', request)
+    else:
+        return HttpResponse('It is too late to make changes')
 
 
 def monthly_summary(request):
@@ -186,4 +190,8 @@ def notifications(request):
             context = dict(form=form, action=action, patients=patients, status_choices = status_choices)
             return render(request, TEMPLATE, context)
         
-        
+def daily_details(request):
+    TEMPLATE = 'webapp/daily_details.html'
+    context = dict()
+    return render(request, TEMPLATE, context)
+
