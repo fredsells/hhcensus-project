@@ -2,8 +2,8 @@
 
 
 {% block content %}
- {% load app_filters %} 
-<body width="90%">
+{% load app_filters %} 
+
 
 <script type="text/javascript">
  $( function() {
@@ -17,20 +17,25 @@
         //alert("You have selected the date - " + yyyy_mm_dd);
 
     });	
+
+	$("#bedcheck td").click(function() {
+		console.log("show details val=  {"+ $(this).text().trim() +"} "+$(this).attr('data-unit') +" "+$(this).attr('data-date'));
+	});
       
    }); //-------------------end init
 
 
 		
 function timout()	{
-		location.href = "{% url 'webapp:logout' %}"
+		location.href = "{% url 'webapp:logout' %}";
 	}
 	
 
 
 		
 </script>
-<h1 class="big-black-box"> Census Monthly Summary </h1>
+<body style="width:850px;margin:10px;">
+<h2 > Census Monthly Summary </h2>
 
 <div id="top"  >
 	<select id="selectmonth">
@@ -64,17 +69,19 @@ function timout()	{
 </thead>
 <tbody id="bedcheck">
 {% for repdate in errors %}
-	<tr> 
+	<tr>
 		<td style="font-weight:bold;background-color:white">{{repdate|date:'l'}}</td>
 		<td style="font-weight:bold;background-color:white"> {{repdate|date:'n/j/Y'}}</td>
 		{% for unit in units %}
+			<td   data-unit="{{unit}}"  data-date="{{repdate|date:'Y-m-d'}}"
 			{% if errors|lookup:repdate|lookup:unit == maxdays %}
-				<td style="background-color:#cc3300"></td>
+				  style="background-color:#cc3300">
 			{% elif errors|lookup:repdate|lookup:unit != 0 %}
-				<td style="background-color:red;color:white">{{errors|lookup:repdate|lookup:unit|default_if_none:''}}</td>
+				 style="background-color:red;color:white">
 			{% else %}
-				<td></td>
+				&nbsp
 			{% endif %}
+			{{errors|lookup:repdate|lookup:unit|default_if_none:''}}</td>
 		{% endfor %}		
 	</tr>
 {%endfor%}

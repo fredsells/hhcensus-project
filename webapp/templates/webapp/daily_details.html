@@ -1,6 +1,7 @@
 {% extends 'webapp/base.html' %}
 
 {% block content %}
+<body width="90%">
 
 <script type="text/javascript">
 
@@ -10,14 +11,7 @@ var page_loaded = false;
  $( function() {
 		//setTimeout("timout()", 60000 * 5);		
 		console.log("started");
-
-		$('#census-tracking-datepicker').datepicker({
-								    onSelect: function(dateText, inst){
-										dateFormat: "dd/mm/yyyy",
-										location.href = "census_tracking?date="+dateText;
-									}
-});		
-
+	
       
    }); //-------------------end init
 		
@@ -43,29 +37,46 @@ function logout() {
 }
 
 </script>
-<body width="90%">
-	<h2> Census Tracking - Resident Location Listing as of 12:01am {{repdate}} </h2>
-	<H2>User = get from Active Directory</H2>
 
-<div class="option-bar">
+
+<table id="heading"  cellpadding="5" class="pageHeader">
+<tbody>
+<tr>
+	<td>
+		<table class="pageHeader">
+		<tbody>
+			<tr class="tableHeader">
+				<td><h2> Census Tracking - Resident Location Listing as of 12:01am {{repdate}} </h2></td>
+			</tr>
+			<tr class="tableHeader">
+				<td align="center">		get user name from AD or force login</td>
+			</tr>
+			
+		<tr class="tableHeader">
+			<td align="center" class="frm_label">	Unit:	
+			
+				<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
+					{% for item in units %}
+						<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
+					{% endfor %}
+				</select>
+			
+			<button class="round_button" onclick="window.print()">Print </button>
+			</td>
+		</tr>
+		</tbody>
+		</table>
+
 	
-	Unit:
-	<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
-		{% for item in units %}
-			
-			<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
-		{% endfor %}
-	</select>
-	<button class="round_button" onclick="window.print()">Print </button>
 
-</div>
 
-			
+<table>
+	
 		
-
+<tbody>
+<tr>
 	
-
-
+	<td>
 		
 
 <table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">

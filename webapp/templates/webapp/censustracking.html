@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<body width="90%">
+
 
 <script type="text/javascript">
  $( function() {
@@ -36,24 +36,22 @@ function timout()	{
 	//}
 }
 
-function printthis() {
-	
-}
 
-
-		
 </script>
-<h1 class="big-black-box"> Census Tracking </h1>
 
-<div id="top"  >
+<body width="90%">
+<H2>Census Tracking </H2>
+
+<H2>User = get from Active Directory</H2>
+
 
 <div id="census-tracking-datepicker"  ></div>
 <div style="height:20px;"> </div>
-	
-<span  class="big-black-box" id="datepicked"> {{date}} </span>
+<div class="option-bar">
+	<span  class="big-black-box" id="datepicked"> {{date}} </span>
 
-<button class="round_button" onclick="window.print()"> Print </button>
-<div style="height:40px;"> </div>
+	<button onclick="window.print()"> Print </button>
+</div>
 
 </div>
 
