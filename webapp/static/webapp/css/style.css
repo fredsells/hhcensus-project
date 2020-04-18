@@ -94,6 +94,9 @@ the following css was removed from inline style in original pages
 to simplity the html and make pages consistent.
 ******************************************************************/
 
+button {
+	padding-left: 20px;
+}
 
 .submit-button{
 	background-color:green;
@@ -204,3 +207,16 @@ H2 {
 	padding:10px; !important
 	
 }
+
+.print-button {
+	background-color: greenyellow;
+}
+
+span:before{
+    content:" "; 
+    display:inline-block; 
+    width:32px;
+}
+
+
+

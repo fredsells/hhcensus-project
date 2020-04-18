@@ -19,13 +19,13 @@ app_name = 'webapp'  #required to use  as a qualifying namespace in template
 urlpatterns = [
 
     path('census_edit', views.census_edit, name='census_edit'),
-    path('census_tracking', views.census_tracking, name='census_tracking'),
+    path('daily_error_details', views.daily_error_details, name='daily_error_details'),
     path('monthly_summary', views.monthly_summary, name='monthly_summary'),
     path('notifications', views.notifications, name='notifications'),
     path('resident_location', views.resident_location, name='resident_location'),
     path('save_changes', views.save_changes, name='save_changes'),
     path('home', views.home, name='home'),
-    path('daily_details', views.daily_details, name='daily_details'),
+    path('daily_census_report', views.daily_census_report, name='daily_census_report'),
     path('logout', views.logout, name='logout'),
 
 

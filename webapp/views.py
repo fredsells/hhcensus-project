@@ -69,8 +69,9 @@ def _update_bed(change, user, now):
     return True
 
 
-def census_tracking(request): ###############################################################
+def daily_error_details(request): ###############################################################
     date = request.GET.get("date", None) 
+    TEMPLATE = 'webapp/daily_error_details.html'
     if date:
         date = datetime.datetime.strptime(date, '%m/%d/%Y').date()
     else:
@@ -83,7 +84,7 @@ def census_tracking(request): ##################################################
     errors.order_by('unit', 'Room')
     totals = residents.values_list('Unit').annotate(total=Count('Unit')).order_by('Unit')
     context = dict(date=date, beds=errors, totals=totals)
-    return render(request, 'webapp/censustracking.html', context)
+    return render(request, TEMPLATE, context)
         
 def resident_location(request):
     unit = request.GET.get('unit', DEFAULT_UNIT)
@@ -190,8 +191,12 @@ def notifications(request):
             context = dict(form=form, action=action, patients=patients, status_choices = status_choices)
             return render(request, TEMPLATE, context)
         
-def daily_details(request):
-    TEMPLATE = 'webapp/daily_details.html'
+def daily_census_report(request):
+    TEMPLATE = 'webapp/daily_census_report.html'
+    unit = request.GET.get('unit', None)
+    date = request.GET.get('date', None)
+    date = datetime.datetime.strptime('%Y-%m-%d')
+    print(unit, date)
     context = dict()
     return render(request, TEMPLATE, context)
 

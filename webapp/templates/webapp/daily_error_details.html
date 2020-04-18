@@ -9,15 +9,13 @@
 		//setTimeout("timout()", 60000 * 5);		
 		console.log("started");
 
-$('#census-tracking-datepicker').datepicker({
-								    onSelect: function(dateText, inst){
-										dateFormat: "dd/mm/yyyy",
-										location.href = "census_tracking?date="+dateText;
-									}
-});		
+$("#datepickerxx").datepicker({	onSelect: function(dateText, inst){
+													location.href = "daily_error_details?date="+dateText;
+												}
+							});		
 
       
-   }); //-------------------end init
+   }); //-------------------end init-----------------------------------------------------------
 
 
 		
@@ -28,10 +26,10 @@ function timout()	{
 
 
 	
- function get_census_tracking(widget) {  
+ function ooooooooooooooooooooooooooooooooooooooooooooooooget_census_tracking(widget) {  
 	//if (page_loaded) {
 	var x = $(".datepicker").val();
-	console.log('onchange '+x);
+	//console.log('onchange '+x);
 	location.href = "census_tracking?date="+x;
 	//}
 }
@@ -40,26 +38,26 @@ function timout()	{
 </script>
 
 <body width="90%">
-<H2>Census Tracking </H2>
+<H2>Daily Error Details and Total Occupancy for {{date}} as of 12:01 AM</H2>
 
 <H2>User = get from Active Directory</H2>
 
 
-<div id="census-tracking-datepicker"  ></div>
+<div  id="datepickerxx"  ></div>
 <div style="height:20px;"> </div>
 <div class="option-bar">
-	<span  class="big-black-box" id="datepicked"> {{date}} </span>
-
-	<button onclick="window.print()"> Print </button>
+	<span   id="datepicked"> {{date}} </span>
+	<span width="20px"> </span>
+		<button class="print-button" onclick="window.print()"> Print </button>
 </div>
 
 </div>
 
 	
-		
-		
+{% if beds|length == 0 %}		
+<h3> There are no errors on this date</h3>		
 
-
+{%else%}
 <table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">
 <thead>
 <tr style="font-weight:bold;background-color:#ECA927" class="tableHeader">	
@@ -94,8 +92,9 @@ function timout()	{
 		
 	</tr>
 {% endfor %}
-</tbody></table>
-
+</tbody>
+</table>
+{%endif%}
 
 <p>
 <table  border="1">
