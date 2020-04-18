@@ -9,8 +9,10 @@
 		//setTimeout("timout()", 60000 * 5);		
 		console.log("started");
 
-$("#datepickerxx").datepicker({	onSelect: function(dateText, inst){
-													location.href = "daily_error_details?date="+dateText;
+$("#datepickerxx").datepicker({	dateFormat: 'yy-mm-dd',
+								onSelect: function(dateText, inst){
+													var url = "daily_error_details?date="+dateText;
+													location.href = url;
 												}
 							});		
 
@@ -22,17 +24,6 @@ $("#datepickerxx").datepicker({	onSelect: function(dateText, inst){
 function timout()	{
 		location.href = "{% url 'webapp:logout' %}"
 	}
-	
-
-
-	
- function ooooooooooooooooooooooooooooooooooooooooooooooooget_census_tracking(widget) {  
-	//if (page_loaded) {
-	var x = $(".datepicker").val();
-	//console.log('onchange '+x);
-	location.href = "census_tracking?date="+x;
-	//}
-}
 
 
 </script>
@@ -79,17 +70,14 @@ function timout()	{
 	<tr> 
 		<td>{{bed.Unit}}</td>
 		<td> {{bed.Room}}</td>
-		
-			<td class="name">{{bed.ResidentName}}</td>
-			<td> {{bed.Status}}</td>
-			<td> {{bed.LevelOfCare}}</td>
-		
-			<td align="center" class="{{bed.Gender}}"> {{bed.Gender}}</td>
-			<td> {{bed.CurrentAdmitDate|date:'Y/m/d'}}</td>
-			<td>{{bed.Inbed}}</td>
-			<td> {{bed.Reason|default_if_none:""}}</td>
-			<td> {{bed.Comments|default_if_none:""}}  </td>			
-		
+		<td class="name">{{bed.ResidentName}}</td>
+		<td> {{bed.Status}}</td>
+		<td> {{bed.LevelOfCare}}</td>
+		<td align="center" class="{{bed.Gender}}"> {{bed.Gender}}</td>
+		<td> {{bed.CurrentAdmitDate|date:'Y-m-d'}}</td>
+		<td>{{bed.Inbed}}</td>
+		<td> {{bed.Reason|default_if_none:""}}</td>
+		<td> {{bed.Comments|default_if_none:""}}  </td>			
 	</tr>
 {% endfor %}
 </tbody>
@@ -101,16 +89,16 @@ function timout()	{
 <tbody>
 	
 	<tr>
-	<td>Unit</td>
-	{% for pair in totals%}
-		<td>{{pair.0}}</td>
-	{%endfor%}
-	</tr>
+		<td>Unit</td>
+			{% for pair in totals%}
+				<td>{{pair.0}}</td>
+			{%endfor%}
+		</tr>
 	<tr>
-	<td>Occupancy</td>
-	{% for pair in totals%}
-		<td>{{pair.1}}</td>
-	{%endfor%}
+		<td>Occupancy</td>
+		{% for pair in totals%}
+			<td>{{pair.1}}</td>
+		{%endfor%}
 	</tr>
 
 </tbody>

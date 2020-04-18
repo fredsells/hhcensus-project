@@ -73,7 +73,7 @@ def daily_error_details(request): ##############################################
     date = request.GET.get("date", None) 
     TEMPLATE = 'webapp/daily_error_details.html'
     if date:
-        date = datetime.datetime.strptime(date, '%m/%d/%Y').date()
+        date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
     else:
         date = datetime.date.today()
     residents = NightlyBedCheck.objects.filter(RepDate=date).exclude(ResidentName='').order_by('Unit', 'Room', )
@@ -191,12 +191,12 @@ def notifications(request):
             context = dict(form=form, action=action, patients=patients, status_choices = status_choices)
             return render(request, TEMPLATE, context)
         
-def daily_census_report(request):
-    TEMPLATE = 'webapp/daily_census_report.html'
-    unit = request.GET.get('unit', None)
-    date = request.GET.get('date', None)
-    date = datetime.datetime.strptime('%Y-%m-%d')
-    print(unit, date)
-    context = dict()
-    return render(request, TEMPLATE, context)
+# def daily_census_report(request):
+#     TEMPLATE = 'webapp/daily_census_report.html'
+#     unit = request.GET.get('unit', None)
+#     date = request.GET.get('date', None)
+#     date = datetime.datetime.strptime('%Y-%m-%d')
+#     print(unit, date)
+#     context = dict()
+#     return render(request, TEMPLATE, context)
 

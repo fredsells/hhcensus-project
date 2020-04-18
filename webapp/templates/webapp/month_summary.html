@@ -19,7 +19,11 @@
     });	
 
 	$("#bedcheck td").click(function() {
-		console.log("show details val=  {"+ $(this).text().trim() +"} "+$(this).attr('data-unit') +" "+$(this).attr('data-date'));
+		var unit = $(this).attr('data-unit');
+		var date = $(this).attr('data-date');
+		var url = "daily_error_details?unit=" + unit + "&date="+date;
+		console.log(url);
+		location.href=url;
 	});
       
    }); //-------------------end init
@@ -34,7 +38,7 @@ function timout()	{
 
 		
 </script>
-<body style="width:850px;margin:10px;">
+<body style="margin:10px;">
 <h2 > Census Monthly Summary </h2>
 
 <div id="top"  >
@@ -86,11 +90,11 @@ function timout()	{
 	</tr>
 {%endfor%}
 
-	<tr class="empty-transparent-row"> <td  class="empty-transparent-row"<div style="background-color:black;"></div></td> </tr>
-	<tr style="background-color:white;color:black;align:center">
-		<td>Summary</td>
-		<td>Total</td>
-		<td colspan="{{units|length}}"> Units </td>
+	
+	<tr style="background-color:darkgray;color:black;align:center; padding:5;">
+		<td style="text-align: center;">Summary</td>
+		<td style="text-align: center;"> Total</td>
+		<td  style="text-align: center;" colspan="{{units|length}}"> Units </td>
 	</tr>
 	{% for total in totals %}
 	<tr style="color:white;background-color:{{total|lookup:'background'}};">
