@@ -60,9 +60,13 @@ def get_old_data(Connection, start, end):
     Connection.close()
     return rows
 
-def insert_data(Connection, data):
+def insert_data(Connection, start, end,  data):
     Cursor = Connection.cursor()
     Cursor.execute('SET NOCOUNT ON')
+    Connection.commit()
+    delete_redundant = '''DELETE dbo.NightlyBedCheck WHERE RepDate BETWEEN  '{}' AND '{}' '''
+    sql = delete_redundant.format(start, end)
+    Cursor.execute(sql)
     Connection.commit()
     sql = '''INSERT  dbo.NightlyBedCheck
                   (Unit ,Room  ,ResidentNumber ,ResidentName
@@ -79,7 +83,7 @@ def insert_data(Connection, data):
 def execute(source, destination, startdate, enddate, save):
     data = get_old_data(source, startdate, enddate)
     if save:
-        insert_data(destination, data)
+        insert_data(destination, startdate, enddate, data)
         print ('%s records inserted  into target database' % (len(data),))
     else:
         for x in data[:9]: print('census:', x)

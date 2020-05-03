@@ -27,6 +27,7 @@ from django.contrib.auth.decorators import permission_required
 
 from .models import NightlyBedCheck, INBED_CHOICES, REASON_CHOICES, CensusChangeLog
 from webapp import logic_census
+from webapp import logic_error_grid
 from webapp import utilities
 from webapp import sql_api 
 from webapp import forms
@@ -89,7 +90,8 @@ def daily_error_details(request): ##############################################
 def resident_location(request):
     unit = request.GET.get('unit', DEFAULT_UNIT)
     date = request.GET.get('date', datetime.date.today() )
-    beds = logic_census.get_beds(unit, date)
+    beds = logic_census.get_beds(unit, date).exclude(ResidentName=' ')
+    ##################################################for b in beds: print( (b) )
     context = dict(user='frederick.sells', 
                     unit=unit, 
                     units = logic_census.get_units(),
@@ -102,6 +104,7 @@ def resident_location(request):
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
     if request.method=='GET':
+        locked = datetime.datetime.now().hour >= settings.BED_STATUS_LOCK_HOUR
         unit = request.GET.get('unit', DEFAULT_UNIT)
         beds = logic_census.get_beds(unit)
         for bed in beds:
@@ -110,6 +113,7 @@ def census_edit(request):
         maxdate = datetime.date.today()
         context = dict(user='frederick.sells', 
                        unit = unit,
+                       locked = locked,
                        units=logic_census.get_units(),
                        inbed_choices = INBED_CHOICES, 
                        reason_choices = REASON_CHOICES,
@@ -120,7 +124,8 @@ def census_edit(request):
 
 @csrf_exempt
 def save_changes(request):  ###########saves changes to In Bed status page.
-    if utilities.is_bedcheck_editing_allowed():
+    locked = datetime.datetime.now().hour >= settings.BED_STATUS_LOCK_HOUR
+    if not locked:
         user = 'fredtest'
         now = datetime.datetime.now()
         if request.is_ajax(): 
@@ -155,7 +160,7 @@ def monthly_summary(request):
         startdate = this_month
     ndays = calendar.monthrange(startdate.year, startdate.month)[1]
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
-    Summarizer = logic_census.MonthlySummaryComputer(startdate)
+    Summarizer = logic_error_grid.MonthlySummaryComputer(startdate)
     errors = Summarizer.get_details_by_day_x_unit()
     context = dict(months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
     return render(request, 'webapp/month_summary.html', context)

@@ -30,12 +30,6 @@ function timout()	{
 		location.href = "{% url 'webapp:logout' %}"
 	}
 	
-function logout() {
-	if (confirm("Are you sure you want to logout")) {
-		location.href = "{% url 'webapp:logout' %}"
-	} else {
-	} 
-}
 
 	
  function select_unit(unit) {  
@@ -44,6 +38,7 @@ function logout() {
 
 </script>
 <body width="90%">
+	{% include "./bNavBar.html" %}   
 	<h2> Census Tracking - Resident Location Listing as of 12:01am {{repdate}} </h2>
 	<H2>User = get from Active Directory</H2>
 

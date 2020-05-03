@@ -324,3 +324,106 @@ GO
 
 
 
+-- ------------------------new tables for Sagely2-----------------------------------------------------
+IF OBJECT_ID('mydata.[Address]', 'U') IS NOT NULL DROP TABLE mydata.[Address]
+CREATE TABLE [mydata].[Address](
+	[AddressID] [int] NOT NULL PRIMARY KEY,
+	[StreetAddress] [varchar](50) NULL,
+	[Suite] [varchar](20) NULL,
+	[City] [varchar](50) NULL,
+	[STATEID] [char](2) NULL,
+	[PostalCode] [varchar](20) NULL,
+	[LastModified] [datetime2](7) NULL,
+	[UserID] [int] NULL,
+	[County] [varchar](50) NULL,
+	[InheritedAddressID] [int] NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--not required, no deleted records are copied	[DeletedFlag] [bit] NULL
+) ON [PRIMARY]
+
+GO
+ 
+
+
+
+IF OBJECT_ID('mydata.PhoneType', 'U') IS NOT NULL DROP TABLE mydata.PhoneType
+CREATE TABLE [mydata].[PhoneType](
+	[PhoneTypeID] [int] NOT NULL PRIMARY KEY,
+	[PhoneTypeDesc] [varchar](50) NOT NULL,
+	[SortOrder] [int] NOT NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL
+) ON [PRIMARY]
+
+GO
+
+
+IF OBJECT_ID('mydata.Phone', 'U') IS NOT NULL DROP TABLE mydata.Phone
+
+CREATE TABLE [mydata].[Phone](
+	[PhoneID] [int] NOT NULL PRIMARY KEY,
+	[PhoneTypeID] [int] NULL,
+	[isPrimary] [bit] NULL,
+	[AreaCode] [char](3) NULL,
+	[Prefix] [char](3) NULL,
+	[Suffix] [char](4) NULL,
+	[Extension] [varchar](6) NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--not needed, dont copy deleted records	[DeletedFlag] [bit] NULL
+) ON [PRIMARY]
+
+GO
+
+
+IF OBJECT_ID('mydata.[PatientContact]', 'U') IS NOT NULL DROP TABLE mydata.[PatientContact]
+
+CREATE TABLE [mydata].[PatientContact](
+	[ContactID] [int] NOT NULL,
+	[PatientID] [int] NOT NULL,
+	[ContactType] [int] NULL,
+	[IsPrimary] [bit] NULL,
+	[LegalGuardian] [bit] NULL,
+	[OtherLegalOversight] [bit] NULL,
+	[POAHealth] [bit] NULL,
+	[POAFinancial] [bit] NULL,
+	[FamilyMember] [bit] NULL,
+	[EmergencyContact] [bit] NULL,
+	[ResponsibleParty] [bit] NULL,
+	[Guardian] [bit] NULL,
+	[POAHealthNonMDS] [bit] NULL,
+	[POAFinancialNonMDS] [bit] NULL,
+	[callPriority] [int] NULL,
+	[deleted] [bit] NULL,
+	[notes] [varchar](500) NULL,
+	[PrimaryFinancialPatientContact] [bit] NULL,
+	[PatientContactReceivesARStatement] [bit] NULL,
+	[PatientContactID] [int] NULL,
+	[createdDate] [datetime2](7) NULL,
+	[OtherRelation] [varchar](50) NULL,
+	[ResidentRepresentative] [bit] NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+-- not needed, removed during copy	[DeletedFlag] [bit] NULL,
+	[MX1_PersonID] [int] NULL,
+	[MX1_ContactID] [int] NULL
+) ON [PRIMARY]
+
+GO
+
+ 
+
+IF OBJECT_ID('mydata.ContactPhoneXref', 'U') IS NOT NULL DROP TABLE mydata.ContactPhoneXref
+CREATE TABLE [mydata].[ContactPhoneXref](
+	[ContactID] [int] NOT NULL,
+	[PhoneID] [int] NOT NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--not needed, removed during copy	[DeletedFlag] [bit] NULL
+ CONSTRAINT [ContactPhoneXref_PK] PRIMARY KEY CLUSTERED 
+(
+	ContactID, PhoneID
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+

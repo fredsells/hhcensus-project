@@ -1,5 +1,33 @@
-ALTER  PROCEDURE mydata.CopyMyDataToLocalDB
-AS
+ 
+    /*ALTER   PROCEDURE  mydata.spCopyMyDataToLocalDB  
+    This procedure just copies tables from MatrixCare MyData DB to a local DB.
+    The MyData DB is connected via a linked DB: [MYDATAHOST5].[BIDW_50582_HebrewHome]...
+    Note that this link is hard coded for speed; if you need to change either the 
+    
+    source or target database. edit this procedure with a global search and replace.
+    
+    All the tables correspond EXACTLY to the MyData tables with the following exceptions:
+		A "WHERE isDeleted=0" is added to avoid copying deleted records.  The purpose is
+		not speed but to avoid having to repeat the "isDeleted" test in all subsequent
+		queries.
+		
+		A new Table that does not exist in Myata has been created to simplify subsequent logic.
+		The table "mydata.FacilityUnitRoomBed"  represents a join of the related tables and
+		uses the BedID as Primary Key although both RoomID and UnitID are available as well.
+		
+	The entire copy process takes about 20 seconds.
+    ***************************************************************************** */
+  
+
+
+
+
+
+
+
+
+CREATE  PROCEDURE [mydata].[spCopyMyDataToLocalDB] AS
+BEGIN
 SET ANSI_NULLS ON;
 SET ANSI_PADDING OFF;
 SET QUOTED_IDENTIFIER ON;
@@ -202,6 +230,7 @@ SELECT [FacilityID]
 FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.PatientStayElement
 WHERE DeletedFlag=0;
 ----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 --tables needed for Sagely2
 
 TRUNCATE TABLE                        mydata.PatientContact
@@ -289,5 +318,16 @@ SELECT [ContactID]
 FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.ContactPhoneXref
 WHERE DeletedFlag=0;
 
-INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE())
+INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE());
 
+
+
+INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE());
+
+
+
+ END; 
+ 
+ GO
+
+--EXEC mydata.spCopyMyDataToLocalDB;

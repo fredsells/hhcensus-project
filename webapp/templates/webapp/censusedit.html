@@ -68,6 +68,10 @@ function get_errors(data){
 }
 
 function validate_form() {
+	{% if locked %}
+		Alert("you cannot save changes after 8:00am");
+		return;
+	{% endif %}
 	var unit = $( "#unit-picker" ).val();
 	var patients = [];
 	$("#bedcheck > tr[data-changed='Yes']").each( function(){  //if no person in bed, data-changed remains "No"
@@ -110,10 +114,7 @@ function timout()	{
 	}
 	
 function logout() {
-	if (confirm("Are you sure you want to logout")) {
-		location.href = "{% url 'webapp:logout' %}"
-	} else {
-	} 
+	
 }
 
 	
@@ -128,25 +129,13 @@ function logout() {
 		
 </script>
 
-<body style="width:850px;">
+<body style="width:950px;">
+	{% include "./bNavBar.html" %}    
 
-<nav class="nav-bar">
-	<!-- 
-	<button onclick="window.location.href = 'home';">home</button>
-	<button onclick="window.location.href='notifications'"> Notifications </button>
-	<button onclick="window.location.href='census_tracking'"> Tracking -- Access View</button>
-	<button onclick="window.location.href='census_edit'">Nightly Bed Check </button>
-	<button onclick="window.location.href='monthly_summary'"> errors Summary </button>
-	<button onclick="window.location.href='resident_location'"> Resident Location </button>
--->	
-	
-
-</nav>
 
 
 <H2>Census Tracking - Nightly Bed Check
-	<input type="button" id="SubmitButton" name="SubmitButton" value="Logout" class="logout-button"	onclick="logout()">
-</H2>
+	
 
 <H2>User = get from Active Directory</H2>
 
@@ -163,7 +152,9 @@ function logout() {
 			<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
 		{% endfor %}
 	</select>
+	
 	<button class="round_button" onclick="validate_form()"> Save Changes </button>
+	
 	<button class="round_button" onclick="window.print()">Print </button>
 
 

@@ -67,10 +67,6 @@ class Command(BaseCommand):
     def save_bedcheck_data(self, records, reportdate):
         records = [DataObject(r) for r in records]
         for r in records:
-           # print(r)
-
-
-
             bed = models.NightlyBedCheck()
             bed.Unit = r.UnitName
             bed.Room = r.RoomAndBed

@@ -73,18 +73,11 @@ class NightlyBedCheck(models.Model):
     Obsolete = models.IntegerField(default = 0)
 
 
-    # @property
-    # def has_error(self):
-    #     #error = False
-    #     return self.ResidentNumber <> '' and (self.Inbed == ''  or (self.Inbed=='No' and self.Reason=''))
-    #     #if self.ResidentName == ''  or self.Inbed='Yes' : return False
-    
-
     def __unicode__(self):
-        return  self.__str()
+        return  self.__str__()
 
     def __str__(self):
-        return '{} {} {} {} Inbed="{}" reason="{}", comments="{}"'.format(self.RepDate, self.Unit, self.Room, self.ResidentName, self.Inbed, self.Reason, self.Comments)
+        return str(( self.RepDate, self.Unit, self.Room, self.ResidentName, self.Inbed, self.Reason, self.Comments) )
         
     class Meta:
         db_table = 'NightlyBedCheck'
@@ -105,24 +98,6 @@ class NightlyBedCheck(models.Model):
 #         db_table = 'webapp_CensusActionType'
 #         #managed = False
         
-################################ mydata models after here ######################################
-
-# class mydataPatients(models.Model):  #see views defined for mydata
-#     PatientID = models.IntegerField(primary_key=True)
-#     LastName = models.CharField(max_length=50, null=True)
-#     FirstName = models.CharField(max_length=50, null=True)
-#     RoomNumber = models.CharField(max_length=151, null=True)
-#     CensusStatus = models.CharField(max_length=30, null=True)
-#     
-#     def __unicode__(self):
-#         return '{}, {}'.format(self.LastName, self.FirstName)
-# 
-#     def __str__(self):
-#         return '{}, {}'.format(self.LastName, self.FirstName)
-#         
-#     class Meta:
-#         db_table = 'mydataPatient'
-#         managed = False       
 
 
 

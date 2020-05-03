@@ -24,20 +24,13 @@ function timout()	{
 		location.href = "{% url 'webapp:logout' %}"
 	}
 	
-function logout() {
-	if (confirm("Are you sure you want to logout")) {
-		location.href = "{% url 'webapp:logout' %}"
-	} else {
-	} 
-}
 
-	
- function ooooooooooooooooooooooooooooselect_unit(unit) {  
-	location.href = "resident_location?unit="+unit;
-}
 
 </script>
+
+
 <body width="90%">
+	{% include "./bNavBar.html" %}    
 	<h2> Daily Census Report {{repdate}} Unit:{{unit}}</h2>
 	
 

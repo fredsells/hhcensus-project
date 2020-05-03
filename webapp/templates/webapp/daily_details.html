@@ -1,7 +1,7 @@
 {% extends 'webapp/base.html' %}
 
 {% block content %}
-<body width="90%">
+
 
 <script type="text/javascript">
 
@@ -24,12 +24,6 @@ function timout()	{
 		location.href = "{% url 'webapp:logout' %}"
 	}
 	
-function logout() {
-	if (confirm("Are you sure you want to logout")) {
-		location.href = "{% url 'webapp:logout' %}"
-	} else {
-	} 
-}
 
 	
  function select_unit(unit) {  
@@ -37,47 +31,22 @@ function logout() {
 }
 
 </script>
+<body width="90%">
+	{% include "./bNavBar.html" %}    
+<<h2> Census Tracking - Resident Location Listing as of 12:01am {{repdate}} </h2>
+<H2>	get user name from AD or force login<</H2>>
 
 
-<table id="heading"  cellpadding="5" class="pageHeader">
-<tbody>
-<tr>
-	<td>
-		<table class="pageHeader">
-		<tbody>
-			<tr class="tableHeader">
-				<td><h2> Census Tracking - Resident Location Listing as of 12:01am {{repdate}} </h2></td>
-			</tr>
-			<tr class="tableHeader">
-				<td align="center">		get user name from AD or force login</td>
-			</tr>
+	<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
+		{% for item in units %}
+			<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
+		{% endfor %}
+	</select>
+
+<button class="round_button" onclick="window.print()">Print </button>
 			
-		<tr class="tableHeader">
-			<td align="center" class="frm_label">	Unit:	
-			
-				<select id="unit-picker" name="unit" class="big-black-box" title="Unit" onchange="select_unit(this.value);">
-					{% for item in units %}
-						<option value="{{item}}" {% if item == unit %}selected="selected"{% endif %}>{{item}}</option>
-					{% endfor %}
-				</select>
-			
-			<button class="round_button" onclick="window.print()">Print </button>
-			</td>
-		</tr>
-		</tbody>
-		</table>
-
-	
 
 
-<table>
-	
-		
-<tbody>
-<tr>
-	
-	<td>
-		
 
 <table cellspacing="1" cellpadding="2" bgcolor="#000000" class="TableAlteringRows">
 <thead>
@@ -137,9 +106,6 @@ function logout() {
 
 
 
-	</td>
-</tr>
-</tbody></table>
 
 
 
