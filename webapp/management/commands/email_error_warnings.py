@@ -46,21 +46,23 @@ class Command(BaseCommand):
         for row in rows: print('\n', type(row), row)
         return HTML_WRAPPER.format( '\n'.join(rows) )
 
-
-    def handle(self, *args, **options):
-        # print('options', options)
-        errors = logic.get_errors() 
-        now = datetime.datetime.now().strftime('%x %X')
-        if errors:
+    def send_email(errors, timetext)
+       if errors:
             body=self.format_email_body(errors)
             subject = '{} errors reported at {}'.format(len(errors),  now)
         else:
             body=HTML_WRAPPER.format('''<h1>Don't Worry, Be Happy there are no errors reported</H1>''')
             subject = 'No errors reported at {}'.format( now )  
-        # print (subject)
-        # print(body)
-        # print('done')
         email_sender.email_anything(subject, body)
+
+    def handle(self, *args, **options):
+        print('options', options)
+        errors = logic.get_errors() 
+        now = datetime.datetime.now().strftime('%x %X')
+        self.send_email(errors, now)
+        print (subject)
+        print(body)
+        # print('done')
         print('done')
         
             

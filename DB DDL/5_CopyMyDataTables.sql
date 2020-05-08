@@ -209,6 +209,7 @@ TRUNCATE TABLE                        mydata.Phone;
 TRUNCATE TABLE                        mydata.PhoneType; 
 TRUNCATE TABLE                        mydata.Address; 
 TRUNCATE TABLE                        mydata.ContactPhoneXref
+TRUNCATE TABLE                        mydata.PatientPhoneXref
 
 
 INSERT	INTO	mydata.PhoneType
@@ -288,6 +289,8 @@ SELECT [ContactID]
       ,[UpdateDate]
 FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.ContactPhoneXref
 WHERE DeletedFlag=0;
+
+
 
 INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE())
 

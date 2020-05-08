@@ -91,6 +91,14 @@ class DatabaseQueryManager(object):
         records = self.get_something(SQL.All_BEDS_AND_CURRENT_OCCUPANTS)
         return records
 
+    def get_sagely2(self):
+        cursor = self.Connection.cursor()
+        cursor.execute(SQL.SAGELY2)
+        records = cursor.fetchall() 
+        names = tuple([column[0] for column in cursor.description] )
+        results = [names ] + records
+        return results
+
 def quickprint(title, records):
     for record in records: print(title, record)
     print()

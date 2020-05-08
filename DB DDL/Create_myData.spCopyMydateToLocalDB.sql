@@ -1,3 +1,13 @@
+USE [CensusApps]
+GO
+
+/****** Object:  StoredProcedure [mydata].[spCopyMyDataToLocalDB]    Script Date: 5/6/2020 3:43:51 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
  
     /*ALTER   PROCEDURE  mydata.spCopyMyDataToLocalDB  
     This procedure just copies tables from MatrixCare MyData DB to a local DB.
@@ -26,7 +36,7 @@
 
 
 
-CREATE  PROCEDURE [mydata].[spCopyMyDataToLocalDB] AS
+ALTER  PROCEDURE [mydata].[spCopyMyDataToLocalDB] AS
 BEGIN
 SET ANSI_NULLS ON;
 SET ANSI_PADDING OFF;
@@ -233,11 +243,39 @@ WHERE DeletedFlag=0;
 ----------------------------------------------------------------------------------------
 --tables needed for Sagely2
 
+TRUNCATE TABLE                        mydata.Contact
 TRUNCATE TABLE                        mydata.PatientContact
 TRUNCATE TABLE                        mydata.Phone; 
 TRUNCATE TABLE                        mydata.PhoneType; 
 TRUNCATE TABLE                        mydata.Address; 
 TRUNCATE TABLE                        mydata.ContactPhoneXref
+TRUNCATE TABLE                        mydata.PatientPhoneXref
+
+
+INSERT	INTO	mydata.Contact
+SELECT [ContactID]
+      ,[Prefix]
+      ,[FirstName]
+      ,[MiddleName]
+      ,[LastName]
+      ,[Suffix]
+      ,[PhoneNumberAreaCode]
+      ,[PhoneNumberPrefix]
+      ,[PhoneNumberSuffix]
+      ,[PhoneNumberExtension]
+      ,[FaxNumberAreaCode]
+      ,[FaxNumberPrefix]
+      ,[FaxNumberSuffix]
+      ,[EmailAddress]
+      ,[AddressID]
+      ,[PagerNumberAreaCode]
+      ,[PagerNumberPrefix]
+      ,[PagerNumberSuffix]
+      ,[InheritedSuperPayerID]
+      ,[InsertDate]
+      ,[UpdateDate]
+FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.[Contact]
+WHERE DeletedFlag=0;
 
 
 INSERT	INTO	mydata.PhoneType
@@ -318,16 +356,27 @@ SELECT [ContactID]
 FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.ContactPhoneXref
 WHERE DeletedFlag=0;
 
+
+INSERT INTO [mydata].[PatientPhoneXref]
+SELECT [ContactID]
+      ,[PhoneID]
+      ,[InsertDate]
+      ,[UpdateDate]
+FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.PatientPhoneXref
+WHERE DeletedFlag=0;
+
+
 INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE());
 
 
 
-INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE());
+--INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE());
 
 
 
  END; 
  
- GO
 
---EXEC mydata.spCopyMyDataToLocalDB;
+GO
+
+

@@ -314,14 +314,14 @@ GO
 --CREATE  INDEX PatientStayElement_NDX ON             mydata.PatientStayElement(PatientID);
 
 /****** Object:  Table [mydata].[LogMyDataRefresh]    Script Date: 2/24/2020 12:56:11 PM ******/
-
+/*
 CREATE TABLE [mydata].[LogMyDataRefresh](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[LastRefresh] [datetime] NOT NULL
 ) ON [PRIMARY]
 
 GO
-
+*/
 
 
 -- ------------------------new tables for Sagely2-----------------------------------------------------
@@ -427,3 +427,88 @@ CREATE TABLE [mydata].[ContactPhoneXref](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+
+IF OBJECT_ID('mydata.PatientPhoneXRef', 'U') IS NOT NULL DROP TABLE mydata.PatientPhoneXRef
+CREATE TABLE [mydata].[PatientPhoneXRef](
+	[ContactID] [int] NOT NULL,
+	[PhoneID] [int] NOT NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+--not needed, removed during copy	[DeletedFlag] [bit] NULL
+ CONSTRAINT [PatientPhoneXRef_PK] PRIMARY KEY CLUSTERED 
+(
+	ContactID, PhoneID
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+
+IF OBJECT_ID('mydata.ContactType', 'U') IS NOT NULL DROP TABLE mydata.ContactType
+CREATE TABLE [mydata].[ContactType](
+	[ContactTypeID] [int] NOT NULL PRIMARY KEY,
+	[ContactTypeDesc] [varchar](50) NOT NULL,
+	[SortOrder] [int] NULL,
+	[active] [bit] NOT NULL,
+	[HL7v3RoleCode] [varchar](10) NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+	
+) ON [PRIMARY];
+
+
+IF OBJECT_ID('mydata.Contact', 'U') IS NOT NULL DROP TABLE mydata.Contact
+CREATE TABLE [mydata].[Contact](
+	[ContactID] [int] NOT NULL,
+	[Prefix] [varchar](10) NULL,
+	[FirstName] [varchar](100) NULL,
+	[MiddleName] [varchar](25) NULL,
+	[LastName] [varchar](25) NULL,
+	[Suffix] [varchar](10) NULL,
+	[PhoneNumberAreaCode] [char](3) NULL,
+	[PhoneNumberPrefix] [char](3) NULL,
+	[PhoneNumberSuffix] [char](4) NULL,
+	[PhoneNumberExtension] [varchar](6) NULL,
+	[FaxNumberAreaCode] [char](3) NULL,
+	[FaxNumberPrefix] [char](3) NULL,
+	[FaxNumberSuffix] [char](4) NULL,
+	[EmailAddress] [varchar](150) NULL,
+	[AddressID] [int] NULL,
+	[PagerNumberAreaCode] [char](3) NULL,
+	[PagerNumberPrefix] [char](3) NULL,
+	[PagerNumberSuffix] [char](4) NULL,
+	[InheritedSuperPayerID] [int] NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL
+) ON [PRIMARY];
+
+
+IF OBJECT_ID('mydata.[PatientContact]', 'U') IS NOT NULL DROP TABLE mydata.[PatientContact]
+CREATE TABLE [mydata].[PatientContact](
+	[ContactID] [int] NOT NULL,
+	[PatientID] [int] NOT NULL,
+	[ContactType] [int] NULL,
+	[IsPrimary] [bit] NULL,
+	[LegalGuardian] [bit] NULL,
+	[OtherLegalOversight] [bit] NULL,
+	[POAHealth] [bit] NULL,
+	[POAFinancial] [bit] NULL,
+	[FamilyMember] [bit] NULL,
+	[EmergencyContact] [bit] NULL,
+	[ResponsibleParty] [bit] NULL,
+	[Guardian] [bit] NULL,
+	[POAHealthNonMDS] [bit] NULL,
+	[POAFinancialNonMDS] [bit] NULL,
+	[callPriority] [int] NULL,
+	[deleted] [bit] NULL,
+	[notes] [varchar](500) NULL,
+	[PrimaryFinancialPatientContact] [bit] NULL,
+	[PatientContactReceivesARStatement] [bit] NULL,
+	[PatientContactID] [int] NULL,
+	[createdDate] [datetime2](7) NULL,
+	[OtherRelation] [varchar](50) NULL,
+	[ResidentRepresentative] [bit] NULL,
+	[InsertDate] [datetime2](7) NULL,
+	[UpdateDate] [datetime2](7) NULL,
+-- not needed, removed during copy	[DeletedFlag] [bit] NULL,
+	[MX1_PersonID] [int] NULL,
+	[MX1_ContactID] [int] NULL
+) ON [PRIMARY];

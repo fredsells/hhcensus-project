@@ -160,7 +160,7 @@ def monthly_summary(request):
         startdate = this_month
     ndays = calendar.monthrange(startdate.year, startdate.month)[1]
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
-    Summarizer = logic_error_grid.MonthlySummaryComputer(startdate)
+    Summarizer = logic_census.MonthlySummaryComputer(startdate)
     errors = Summarizer.get_details_by_day_x_unit()
     context = dict(months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
     return render(request, 'webapp/month_summary.html', context)
