@@ -290,6 +290,14 @@ SELECT [ContactID]
 FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.ContactPhoneXref
 WHERE DeletedFlag=0;
 
+INSERT INTO mydata.PatientPhoneXref
+SELECT [ContactID]
+      ,[PhoneID]
+      ,[InsertDate]
+      ,[UpdateDate]
+FROM [MATRIXCARE].[BIDW_50582_HebrewHome].STVSNF.PatientPhoneXref
+WHERE DeletedFlag=0;
+
 
 
 INSERT INTO mydata.logMydataRefresh (LastRefresh) values(GETDATE())

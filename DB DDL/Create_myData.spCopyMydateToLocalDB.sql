@@ -358,7 +358,7 @@ WHERE DeletedFlag=0;
 
 
 INSERT INTO [mydata].[PatientPhoneXref]
-SELECT [ContactID]
+SELECT [PatientID]
       ,[PhoneID]
       ,[InsertDate]
       ,[UpdateDate]

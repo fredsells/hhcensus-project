@@ -32,19 +32,26 @@ All_BEDS_AND_CURRENT_OCCUPANTS = '''
         ORDER BY UnitName, RoomName, BedName
         '''
 
-SAGELY2 = '''SELECT 
+SAGELY2 = '''/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT 
 	pat.MedicalRecordNumber
 	, pat.LastName [Resident_Last]
 	, pat.FirstName [Resident_First]
 	, CONVERT(VARCHAR(12), DateOfBirth, 101) [DOB]
-	, NULL [LevelOfCare] --unit goes here
+	, bed.UnitName [LevelOfCare] --unit goes here
 	, pat.MiddleName [MiddleName]
 	, NULL [MaidenName] -- not used
 	, pat.PreferredName [Nickname]
-	, NULL [Phone] --@
+	, CASE 
+			WHEN patphone.AreaCode IS NOT NULL THEN  CONCAT('(', patphone.AreaCode, ') ', patphone.Prefix, '-', patphone.Suffix) 
+			ELSE NULL
+	  END [Phone] 
 	, NULL [Email] -- not used
 	, CONCAT(ec.FirstName, ' ', ec.LastName) [EmergencyName] --@
-	, phone.EmergencyPhone [EmergencyPhone] --@
+	, CASE 
+			WHEN ecphone.AreaCode IS NOT NULL THEN  CONCAT('(', ecphone.AreaCode, ') ', ecphone.Prefix, '-', ecphone.Suffix) 
+			ELSE NULL
+	  END [EmergencyPhone] 
 	, pat.Sex [Gender]
 	, NULL [Ethnicity] --not used
 	, NULL [HomeTown] -- not used
@@ -72,28 +79,36 @@ FROM (
 	) AS pse
 JOIN mydata.Patient AS pat ON pat.PatientID = pse.PatientID
 JOIN mydata.FacilityUnitRoomBed AS bed ON bed.BedID=pse.BedID
-LEFT JOIN (
-	SELECT PatientID, ContactID 
-	FROM (
-			SELECT PatientID
-				,  ContactID
-				, ROW_NUMBER() OVER(PARTITION BY PatientID, ContactID ORDER BY CallPriority DESC)     AS rk
-			FROM mydata.PatientContact
-			 WHERE EmergencyContact = 1
-		  ) AS f
-	WHERE f.rk=1
-    ) AS pcx on pcx.PatientID = pat.PatientID
-LEFT JOIN mydata.Contact AS ec ON ec.ContactID = pcx.ContactID
-LEFT JOIN (
-	SELECT xph.ContactID
-		, CASE ph.AreaCode
-			WHEN NULL THEN NULL
-			ELSE CONCAT('(', ph.AreaCode, ') ', ph.Prefix, '-', ph.Suffix) 
-		END [EmergencyPhone] --@
-		, ROW_NUMBER() OVER(PARTITION BY ContactID ORDER BY ph.isPrimary DESC, pt.SortOrder ASC)     AS rk
-	FROM mydata.ContactPhoneXref AS xph
-	JOIN mydata.Phone AS ph ON ph.PhoneID = xph.PhoneID
-	JOIN mydata.PhoneType AS pt ON pt.PhoneTypeID=ph.PhoneTypeID
-	WHERE pt.PHoneTypeID in (1,4)  -- eliminate fax
-	) AS phone ON ec.ContactID=phone.ContactID
+---------------------------------------------- Emergency Contact ------------------------------------------
+OUTER APPLY (
+		SELECT TOP 1 PatientID, AreaCode, Prefix, Suffix
+		FROM mydata.Phone AS ph
+		JOIN mydata.PatientPhoneXRef AS x ON x.PhoneID=ph.PhoneID
+		JOIN mydata.PhoneType AS pt ON pt.PhoneTypeID=ph.PhoneTypeID
+		WHERE pt.PhoneTypeID NOT IN (5,6) --eliminate fax, leave pager
+			AND x.PatientID = pat.PatientID
+			AND ph.AreaCode IS NOT NULL
+			AND LEN(ph.AreaCode) >1
+		ORDER BY ph.isPrimary DESC, pt.SortOrder
+		) AS patphone
+OUTER APPLY (  -- get contact with lowest priority number which we assume is highest priority.
+		SELECT TOP 1 * 
+		FROM mydata.PatientContact
+		WHERE  EmergencyContact=1
+		AND PatientID = pat.PatientID
+		ORDER BY callPriority
+		) AS pcx  
+LEFT JOIN mydata.Contact AS ec ON ec.ContactID = pcx.ContactID  --emergency contact
+OUTER APPLY (
+			select top 1 ph.AreaCode, ph.Prefix, ph.Suffix
+			FROM mydata.ContactPhoneXref AS xph
+			JOIN mydata.Phone AS ph ON ph.PhoneID = xph.PhoneID
+			JOIN mydata.PhoneType AS pt ON pt.PhoneTypeID=ph.PhoneTypeID
+			WHERE pt.PHoneTypeID   NOT IN(5,6)  -- eliminate fax
+				AND xph.ContactID= ec.ContactID
+				AND LEN(ph.AreaCode)>0
+			ORDER BY pt.SortOrder
+	) AS ecphone 
+ORDER BY Resident_Last, Resident_First, DOB
+
   '''

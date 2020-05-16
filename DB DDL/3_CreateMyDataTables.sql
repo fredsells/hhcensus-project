@@ -430,16 +430,17 @@ CREATE TABLE [mydata].[ContactPhoneXref](
 
 IF OBJECT_ID('mydata.PatientPhoneXRef', 'U') IS NOT NULL DROP TABLE mydata.PatientPhoneXRef
 CREATE TABLE [mydata].[PatientPhoneXRef](
-	[ContactID] [int] NOT NULL,
+	[PatientID] [int] NOT NULL,
 	[PhoneID] [int] NOT NULL,
 	[InsertDate] [datetime2](7) NULL,
 	[UpdateDate] [datetime2](7) NULL,
---not needed, removed during copy	[DeletedFlag] [bit] NULL
  CONSTRAINT [PatientPhoneXRef_PK] PRIMARY KEY CLUSTERED 
 (
-	ContactID, PhoneID
+	[PatientID] ASC,
+	[PhoneID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
+
 
 
 IF OBJECT_ID('mydata.ContactType', 'U') IS NOT NULL DROP TABLE mydata.ContactType
