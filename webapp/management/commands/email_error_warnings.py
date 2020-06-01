@@ -14,6 +14,7 @@ from django.core.management.base import BaseCommand, CommandError
 from webapp.constants import *
 from webapp import logic_census as logic
 from webapp import email_sender
+from django.conf import settings
 
 HTML_WRAPPER = '''<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
                     <h3>Incomplete/Error in Nightly Bed Check</h3>
@@ -43,27 +44,27 @@ class Command(BaseCommand):
         for error in errors:
             tr =TR( [TD(error[key]) for key in header] )
             rows.append(tr)
-        for row in rows: print('\n', type(row), row)
+        # for row in rows: print('\n', type(row), row)
         return HTML_WRAPPER.format( '\n'.join(rows) )
 
-    def send_email(errors, timetext)
-       if errors:
+    def send_email(self, errors, timetext):
+        if errors:
             body=self.format_email_body(errors)
-            subject = '{} errors reported at {}'.format(len(errors),  now)
+            subject = '{} {} errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, len(errors),  timetext)
         else:
             body=HTML_WRAPPER.format('''<h1>Don't Worry, Be Happy there are no errors reported</H1>''')
-            subject = 'No errors reported at {}'.format( now )  
-        email_sender.email_anything(subject, body)
+            subject = '{} No errors reported at {}'.format(EMAIL_SUBJECT_PREFIX, timetext )  
+        email_sender.email_anything(settings.CENSUS_RECIPIENTS, subject, body)
 
     def handle(self, *args, **options):
-        print('options', options)
+        # print('options', options)
         errors = logic.get_errors() 
         now = datetime.datetime.now().strftime('%x %X')
         self.send_email(errors, now)
-        print (subject)
-        print(body)
+        # print (subject)
+        # print(body)
+        # # print('done')
         # print('done')
-        print('done')
         
             
             

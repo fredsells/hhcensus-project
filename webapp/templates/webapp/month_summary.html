@@ -75,16 +75,16 @@ function timout()	{
 <tbody id="bedcheck">
 {% for repdate in errors %}
 	<tr>
-		<td style="font-weight:bold;background-color:white">{{repdate|date:'l'}}</td>
-		<td style="font-weight:bold;background-color:white"> {{repdate|date:'n/j/Y'}}</td>
+		<td style="font-weight:normal;background-color:white;text-align:left;">{{repdate|date:'l'}}</td>
+		<td style="font-weight:normal;background-color:white;padding:2px 5px 2px 5px"> {{repdate|date:'n/j/Y'}}</td>
 		{% for unit in units %}
-			<td   data-unit="{{unit}}"  data-date="{{repdate|date:'Y-m-d'}}"
+			<td    data-unit="{{unit}}"  data-date="{{repdate|date:'Y-m-d'}}"
 			{% if errors|lookup:repdate|lookup:unit == maxdays %}
-				  style="background-color:#cc3300">
+				  style="background-color:#cc3300;width:25px;">
 			{% elif errors|lookup:repdate|lookup:unit != 0 %}
-				 style="background-color:red;color:white">
+				 style="background-color:red;color:white;width:25px;">
 			{% else %}
-				&nbsp
+				style="width:25px;" 
 			{% endif %}
 			{{errors|lookup:repdate|lookup:unit|default_if_none:''}}</td>
 		{% endfor %}		

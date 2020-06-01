@@ -19,7 +19,6 @@ EMAIL_HOST = 'smtp.hebrewhome.org'
 #EMAIL_PORT = 587  #for secure, use 25 for non secure.
 #default '' EMAIL_HOST_USER = ''
 #default = '' EMAIL_HOST_PASSOWRD = None
-EMAIL_SUBMECT_PREFIX = ''  # default='[Django] '
 #EMAIL_USE_TLS = True #depends on email provider
 #EMAIL_USE_SSL = False
 
@@ -39,11 +38,29 @@ SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-BED_STATUS_LOCK_HOUR = 16  #becomes 8:00 am
+TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
+                                        'antonique.martin@RiverSpringHealth.org']
 
 ALLOWED_HOSTS = ['*']
 
+#NOTE: django simple email sender takes a list while more complex Python email modules takes a list.
+# all distro lists are defined as list and converted in sending module if necessary.
+# The django module is not capable of handling attachments, which are needed for Sagely
+if DEBUG:
+    SAGELY2_DISTRIBUTION_LIST = TEST_EMAIL_RECIPIENTS
+    CENSUS_RECIPIENTS = TEST_EMAIL_RECIPIENTS
+    FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
+    EMAIL_SUBJECT_PREFIX = '***TESTING*** '
+    BED_STATUS_LOCK_HOUR = 16  #becomes 8:00 am
 
+else: 
+    EMAIL_SUBJECT_PREFIX = ''  # default='[Django] '
+    CENSUS_RECIPIENTS = ['censusnotification@hebrewhome.org']   
+    FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
+    SAGELY2_DISTRIBUTION_LIST = TEST_EMAIL_RECIPIENTS     #@todo
+    BED_STATUS_LOCK_HOUR = 8  #becomes 8:00 am
+
+ 
 # Application definition
 
 INSTALLED_APPS = [

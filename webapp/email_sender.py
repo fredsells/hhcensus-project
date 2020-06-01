@@ -12,19 +12,7 @@ from webapp import email_notification_templates as templates
 from webapp.constants import *
 from django.conf import settings
 
-TESTONLY_EMAIL_ADDRESSEES = ['frederick.sells@RiverSpringHealth.org', 
-                             'Jonathan.Clark@riverspringhealth.org', 
-                             'Antonique.Martin@riverspringhealth.org']
 
-PRODUCTION_EMAIL_ADDRESSEES = ['censusnotification@hebrewhome.org']    
-
-FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
-
-def get_recipients():
-    if settings.DEBUG:
-        return TESTONLY_EMAIL_ADDRESSEES
-    else:
-        return PRODUCTION_EMAIL_ADDRESSEES
 
 
 
@@ -40,29 +28,26 @@ def get_email_body(values):
     return body
 
 
-def email_census_edit_notification(**values): 
+def email_census_edit_notification(recipients, **values): 
     (subject, html) = templates.get_subject_and_body(values)
     subject = 'TESTING ONLY' + subject
     django_send_mail(
         subject = subject,
         message = 'plain text not supported',
         from_email = NO_REPLY,
-        recipient_list = get_recipients(),
+        recipient_list = recipients,
         fail_silently=False,
         html_message = html
     )
     return
 
-def email_anything(subject, body ):
-    print('sendint to', get_recipients())
-    print(subject)
-    print(body)
+def email_anything(recipients, subject, body ):
     django_send_mail(
         subject = 'TESTING '+subject,
         message = 'plain text not supported',
         from_email = NO_REPLY,
         # recipient_list = ['Frederick.Sells@riverspringhealth.org'], #get_recipients(),
-        recipient_list = get_recipients(),
+        recipient_list = recipients,
         fail_silently=False,
         html_message = body
         )

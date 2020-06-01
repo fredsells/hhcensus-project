@@ -48,6 +48,7 @@ class MonthlySummaryComputer(object):  #red/green grid
         grid = self.get_empty_grid(repdates, units)
         grid = self.populate_grid(grid, queryset)
         self.grid=grid
+        ####################################self.print_grid(grid)
         self.units_with_errors = dict(zip(units, zeroes))
         self.total_days_with_nothing_done_by_unit = dict(zip(units, zeroes))
         self.get_totals(units, grid)
@@ -61,7 +62,7 @@ class MonthlySummaryComputer(object):  #red/green grid
     def populate_grid(self, grid, queryset):
         residents = queryset.exclude(ResidentName='').exclude( Inbed='YES')
         for x in residents:
-            if (x.Inbed=='') or (x.Inbed=='No' and x.Reason != ''): 
+            if  (x.Inbed=='No' and x.Reason != ''): 
                 pass
             else:
                 grid[x.RepDate][x.Unit] += 1
@@ -80,11 +81,13 @@ class MonthlySummaryComputer(object):  #red/green grid
                 elif row[unit] > 0:              partialcensus[unit] += 1
                 else:                            fullcensus[unit] += 1
                 totals[unit] = max_days
-        self.totals = [fullcensus, nocensus, partialcensus, totals]
+        ##########################self.totals = [fullcensus, nocensus, partialcensus, totals]
+        self.totals = [fullcensus, partialcensus, totals]
         for row in self.totals:  row['total']= sum(row.values())
+        for row in [fullcensus, totals]: row['total']=''
         fullcensus['title'] = 'Days of Full Census Done'
-        nocensus['title'] = 'Days of No Census Done'
-        partialcensus['title'] = 'Days of Partial Census Done'
+        nocensus['title'] = ''
+        partialcensus['title'] = 'Days of Errors/Incomplete Census'
         totals['title'] = 'Totals'
         fullcensus['background'] = 'green'
         nocensus['background'] = '#cc3300'

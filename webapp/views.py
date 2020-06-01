@@ -177,7 +177,7 @@ def notifications(request):
         values.pop('csrfmiddlewaretoken', None)  #don't need this
         values.pop('btnSubmit', None)
         values['timestamp'] = datetime.datetime.now()
-        email_sender.email_census_edit_notification(**values)
+        email_sender.email_census_edit_notification(settings.CENSUS_RECIPIENTS, **values)
         date = values.pop('date')
         time = values.pop('time')
         values['eventtime'] = datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')  

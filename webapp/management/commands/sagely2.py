@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
     def write_file(self, records):
         path = os.path.abspath('D:/Temp/sagely.csv')
-        print (path)
+        # print (path)
         with open(path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows(records)
@@ -46,9 +46,9 @@ class Command(BaseCommand):
 
     def send_email(self, path):
         outer = MIMEMultipart()
-        outer['Subject'] = 'TEST Sagely2n'
+        outer['Subject'] = '{} Sagely2n'.format(settings.EMAIL_SUBJECT_PREFIX)
         outer['From'] = 'no-reply@hebrewhome.org'
-        outer['To'] = ', '.join(['frederick.sells@RiverSpringHealth.org'])
+        outer['To'] = ', '.join(settings.SAGELY2_DISTRIBUTION_LIST)
         with open(path, 'rb') as fp:
                 part = MIMEBase("application", "octet-stream")
                 part.set_payload(fp.read())
@@ -64,7 +64,7 @@ class Command(BaseCommand):
     
 
     def handle(self, *args, **options):
-        print('options', options)
+        # print('options', options)
         records = self.get_data() 
         path = self.write_file(records)
         self.send_email(path)
