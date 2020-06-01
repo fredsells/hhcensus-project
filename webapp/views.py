@@ -52,7 +52,7 @@ class MyObject:
 
 def home(request):
     print('---------------------rendering home')
-    context = {}
+    context = dict(user=request.user, authenticated=request.user.is_authenticated)
     return render(request, 'webapp/home.html', context)
         
      
