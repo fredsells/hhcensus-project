@@ -51,13 +51,15 @@ class MyObject:
         return text
 
 def home(request):
-    print('---------------------rendering home')
-    context = dict(user=request.user, authenticated=request.user.is_authenticated)
+    user = request.META['REMOTE_USER']
+    context = dict(user=user, authenticated=request.user.is_authenticated)
     return render(request, 'webapp/home.html', context)
         
      
 def logout(request):
-    return render(request, 'webapp/logout.html', {})    
+    user = request.META['REMOTE_USER']
+    context = dict(user=user, authenticated=request.user.is_authenticated)
+    return render(request, 'webapp/logout.html', context)    
 
 def _update_bed(change, user, now):
     bed = NightlyBedCheck.objects.get(pk=change.id)
@@ -71,6 +73,7 @@ def _update_bed(change, user, now):
 
 
 def daily_error_details(request): ###############################################################
+    user = request.META['REMOTE_USER']
     date = request.GET.get("date", None) 
     TEMPLATE = 'webapp/daily_error_details.html'
     if date:
@@ -84,15 +87,16 @@ def daily_error_details(request): ##############################################
     errors = InbedBlank | InbedNoReasonBlank
     errors.order_by('unit', 'Room')
     totals = residents.values_list('Unit').annotate(total=Count('Unit')).order_by('Unit')
-    context = dict(date=date, beds=errors, totals=totals)
+    context = dict(date=date, beds=errors, totals=totals, user=user)
     return render(request, TEMPLATE, context)
         
 def resident_location(request):
+    user = request.META['REMOTE_USER']
     unit = request.GET.get('unit', DEFAULT_UNIT)
     date = request.GET.get('date', datetime.date.today() )
     beds = logic_census.get_beds(unit, date).exclude(ResidentName=' ')
     ##################################################for b in beds: print( (b) )
-    context = dict(user='frederick.sells', 
+    context = dict(user=user, 
                     unit=unit, 
                     units = logic_census.get_units(),
                     beds = beds,
@@ -103,6 +107,7 @@ def resident_location(request):
 
 @cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
 def census_edit(request):
+    user = request.META['REMOTE_USER']
     if request.method=='GET':
         locked = datetime.datetime.now().hour >= settings.BED_STATUS_LOCK_HOUR
         unit = request.GET.get('unit', DEFAULT_UNIT)
@@ -111,7 +116,7 @@ def census_edit(request):
             if bed.CurrentAdmitDate == None: continue #nobody in the bed
             bed.CurrentAdmitDate = bed.CurrentAdmitDate.strftime('%#m/%#d/%Y')
         maxdate = datetime.date.today()
-        context = dict(user='frederick.sells', 
+        context = dict(user=user, 
                        unit = unit,
                        locked = locked,
                        units=logic_census.get_units(),
@@ -124,9 +129,9 @@ def census_edit(request):
 
 @csrf_exempt
 def save_changes(request):  ###########saves changes to In Bed status page.
+    user = request.META['REMOTE_USER']
     locked = datetime.datetime.now().hour >= settings.BED_STATUS_LOCK_HOUR
     if not locked:
-        user = 'fredtest'
         now = datetime.datetime.now()
         if request.is_ajax(): 
             data = json.loads(request.body.decode("UTF-8"))
@@ -138,7 +143,7 @@ def save_changes(request):  ###########saves changes to In Bed status page.
                 bed.Inbed=p['inbed']
                 bed.Reason=p['reason']
                 bed.Comments=p['comment']
-                bed.UpdatedByName = user
+                bed.UpdatedByName = user.replace('HHAR\\', '')
                 bed.UpdateDatetime=now
                 bed.save()
             context = {'comment': 'update successful'}
@@ -150,6 +155,7 @@ def save_changes(request):  ###########saves changes to In Bed status page.
 
 
 def monthly_summary(request):
+    user = request.META['REMOTE_USER']
     units=logic_census.get_units()
     this_month = datetime.date.today().replace(day=1)
     months = [ this_month-relativedelta(months=i) for i in range(12)]
@@ -162,15 +168,15 @@ def monthly_summary(request):
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
     Summarizer = logic_census.MonthlySummaryComputer(startdate)
     errors = Summarizer.get_details_by_day_x_unit()
-    context = dict(months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
+    context = dict(user=user, months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
     return render(request, 'webapp/month_summary.html', context)
     
     
 ###############################################################################################
 
 def notifications(request):
+    user = request.META['REMOTE_USER']
     TEMPLATE = 'webapp/notifications.html'
-    USER='unknown need AD'
     FORM_CLASS = forms.CensusChangeForm
     if request.method == 'POST':
         values =  dict(request.POST.items())
@@ -180,11 +186,11 @@ def notifications(request):
         email_sender.email_census_edit_notification(settings.CENSUS_RECIPIENTS, **values)
         date = values.pop('date')
         time = values.pop('time')
-        values['eventtime'] = datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')  
+        values['eventtime'] = datetime.datetime.strptime( date+time, '%m/%d/%Y%H:%M')
+        values['user']  = user.replace('HHAR\\','')
         record = CensusChangeLog(**values)
         record.save()
         return redirect('/webapp/notifications')
-
     else:  ####################################  GET method ##################################
         action = request.GET.get('action', '0')
         if action == None:
@@ -192,8 +198,8 @@ def notifications(request):
         else:
             patients=forms.CHOICES.Patients
             status_choices=forms.CHOICES.StatusChoices
-            form = FORM_CLASS(initial= dict(action=action, user=USER))
-            context = dict(form=form, action=action, patients=patients, status_choices = status_choices)
+            form = FORM_CLASS(initial= dict(action=action, user=user))
+            context = dict(user=user, form=form, action=action, patients=patients, status_choices = status_choices)
             return render(request, TEMPLATE, context)
         
 # def daily_census_report(request):

@@ -8,6 +8,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+/static/*
 all_letters/docx_templates/
 all_letters/tmpfiles/
 .Python

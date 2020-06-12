@@ -50,10 +50,10 @@ class Command(BaseCommand):
     def send_email(self, errors, timetext):
         if errors:
             body=self.format_email_body(errors)
-            subject = '{} {} errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, len(errors),  timetext)
+            subject = '{} {} Bedcheck errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, len(errors),  timetext)
         else:
             body=HTML_WRAPPER.format('''<h1>Don't Worry, Be Happy there are no errors reported</H1>''')
-            subject = '{} No errors reported at {}'.format(EMAIL_SUBJECT_PREFIX, timetext )  
+            subject = '{} No Bedcheck errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, timetext ) 
         email_sender.email_anything(settings.CENSUS_RECIPIENTS, subject, body)
 
     def handle(self, *args, **options):

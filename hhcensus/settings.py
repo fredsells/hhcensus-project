@@ -27,7 +27,7 @@ DATE_INPUT_FORMATS = ['%Y-%m-%d'] #'%d-%m-%Y', '%m/%d/%Y',
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+############print(BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +37,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
                                         'antonique.martin@RiverSpringHealth.org']
 
@@ -51,13 +51,13 @@ if DEBUG:
     CENSUS_RECIPIENTS = TEST_EMAIL_RECIPIENTS
     FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
     EMAIL_SUBJECT_PREFIX = '***TESTING*** '
-    BED_STATUS_LOCK_HOUR = 16  #becomes 8:00 am
+    BED_STATUS_LOCK_HOUR = 16  #becomes 4:00 pm for testing
 
 else: 
     EMAIL_SUBJECT_PREFIX = ''  # default='[Django] '
     CENSUS_RECIPIENTS = ['censusnotification@hebrewhome.org']   
     FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
-    SAGELY2_DISTRIBUTION_LIST = TEST_EMAIL_RECIPIENTS     #@todo
+    SAGELY2_DISTRIBUTION_LIST = ['Sagely2@hebrewhome.org']
     BED_STATUS_LOCK_HOUR = 8  #becomes 8:00 am
 
  
@@ -213,3 +213,4 @@ USE_L10N = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static") #used by collectstatic in production

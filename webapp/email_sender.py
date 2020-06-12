@@ -18,19 +18,19 @@ from django.conf import settings
 
 
 def get_email_body(values):
-    print (values.items())
+    #print (values.items())
     timestamp = values['timestamp']
     values['date'] = timestamp.strftime('%m/%d/%Y')
     values['time']= timestamp.strftime('%I:%M %p')
     template = templates.get_html_template(values['action'])
     body = template.format(**values)
-    print (body)
+    #print (body)
     return body
 
 
 def email_census_edit_notification(recipients, **values): 
     (subject, html) = templates.get_subject_and_body(values)
-    subject = 'TESTING ONLY' + subject
+    #subject = 'TESTING ONLY' + subject
     django_send_mail(
         subject = subject,
         message = 'plain text not supported',
@@ -43,10 +43,9 @@ def email_census_edit_notification(recipients, **values):
 
 def email_anything(recipients, subject, body ):
     django_send_mail(
-        subject = 'TESTING '+subject,
+        subject = subject,
         message = 'plain text not supported',
         from_email = NO_REPLY,
-        # recipient_list = ['Frederick.Sells@riverspringhealth.org'], #get_recipients(),
         recipient_list = recipients,
         fail_silently=False,
         html_message = body
