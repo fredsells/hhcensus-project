@@ -37,7 +37,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
                                         'antonique.martin@RiverSpringHealth.org']
 
