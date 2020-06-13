@@ -17,12 +17,15 @@ from webapp import email_sender
 from django.conf import settings
 
 HTML_WRAPPER = '''<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-                    <h3>Incomplete/Error in Nightly Bed Check</h3>
+                    <h1>CENSUS UPDATE REPORT</h1>
                     <table border="1"><tbody>
                     {}
-                    </tbody></table>'''
+                    </tbody></table>
+                    <br/>
+                    Please do not reply to this email; this address is not monitored.
+                    '''
 
-def TR(tds, htmlclass=None):
+def TR(tds):
     text = ' '.join(tds)
     return '<tr>{}</tr>'.format(text or '')
 
@@ -39,32 +42,25 @@ class Command(BaseCommand):
         parser.add_argument('--testonly', action= 'store_true', help = 'print info only, dont send', default=False)
         
     def format_email_body(self, errors):
-        header = 'Unit	RepDate	Room	ResidentName	Status	LevelOfCare	Gender	CurrentAdmitDate	Inbed	Reason	Comments'.split()
+        header = ['Unit', 'Incomplete Census Records']
         rows = [TR([TH(x) for x in header])]
+        totals = {}
         for error in errors:
-            tr =TR( [TD(error[key]) for key in header] )
-            rows.append(tr)
-        # for row in rows: print('\n', type(row), row)
+            unit = error['Unit']
+            totals.setdefault(unit,0)
+            totals[unit] = totals[unit]+1
+        tds = [ [TD(unit), TD(count)] for unit,count in totals.items()]
+        [rows.append(TR( x)) for x in tds]
         return HTML_WRAPPER.format( '\n'.join(rows) )
 
-    def send_email(self, errors, timetext):
-        if errors:
-            body=self.format_email_body(errors)
-            subject = '{} {} Bedcheck errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, len(errors),  timetext)
-        else:
-            body=HTML_WRAPPER.format('''<h1>Don't Worry, Be Happy there are no errors reported</H1>''')
-            subject = '{} No Bedcheck errors reported at {}'.format(settings.EMAIL_SUBJECT_PREFIX, timetext ) 
+    def send_email(self, errors):
+        subject = '{} CENSUS UPDATE REPORT '.format(settings.EMAIL_SUBJECT_PREFIX)
+        body=self.format_email_body(errors)
         email_sender.email_anything(settings.CENSUS_RECIPIENTS, subject, body)
 
     def handle(self, *args, **options):
-        # print('options', options)
         errors = logic.get_errors() 
-        now = datetime.datetime.now().strftime('%x %X')
-        self.send_email(errors, now)
-        # print (subject)
-        # print(body)
-        # # print('done')
-        # print('done')
+        self.send_email(errors)
         
             
             
