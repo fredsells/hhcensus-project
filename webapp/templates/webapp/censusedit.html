@@ -204,7 +204,7 @@ function logout() {
 			<td> {{bed.CurrentAdmitDate}}</td>
 			<td> {{bed.Status}}</td>
 			<td> {{bed.LevelOfCare}}</td>
-			<td> 
+			<td class="Inbed{{bed.Inbed}}"> 
 			<select class="inbed" id="inbed{{bed.id}}" name="inbed{{bed.id}}" onchange="inbed_changed(this)">
 					{% for item in inbed_choices %}
 						<option value="{{item.1}}" 
