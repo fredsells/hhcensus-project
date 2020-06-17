@@ -56,7 +56,7 @@ class Command(BaseCommand):
     def send_email(self, errors):
         subject = '{} CENSUS UPDATE REPORT '.format(settings.EMAIL_SUBJECT_PREFIX)
         body=self.format_email_body(errors)
-        email_sender.email_anything(settings.CENSUS_RECIPIENTS, subject, body)
+        email_sender.email_anything(settings.CensusUpdateReportRecipients, subject, body)
 
     def handle(self, *args, **options):
         errors = logic.get_errors() 
