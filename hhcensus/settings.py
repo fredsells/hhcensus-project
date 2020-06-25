@@ -41,9 +41,7 @@ SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
 DEBUG = False
 TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
                                         'antonique.martin@RiverSpringHealth.org']
-ADMINS =   [ ('Fred', 'frederick.sells@RiverSpringHealth.org'), 
-             ('Jonathan', 'jonathan.clark@RiverSpringHealth.org'), 
-             ('Antonique', 'antonique.martin@RiverSpringHealth.org')]
+ADMINS =   [ ('DjangoAdmin', 'ADMINSs@RiverSpringHealth.org'), ]
 
 ALLOWED_HOSTS = ['*'] #todo restrict to RiverSpring domain.
 
@@ -112,57 +110,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-#  r'DRIVER={SQL Server Native Client 10.0};'
-#         r'SERVER=.\SQLEXPRESS;'
-#         r'DATABASE=HHBedCheck;'
-#          r'Trusted_Connection=yes;'
-
-
-
-# LOCAL_SQLEXPRESS_DB = {
-#     'default': {
-#         'ENGINE': 'sql_server.pyodbc',
-#         'NAME': 'HHBedCheck',
-#         'HOST': r'.\SQLEXPRESS',
-#        # 'PORT':'1433',
-#         'USER': 'django',
-#         'PASSWORD': 'django',
-#         'OPTIONS': {
-#                  'driver': 'SQL Server Native Client 10.0',                
-#                  }
-#         },  
-#     }
-
-# HHARSWLSQLDEV01 = {
-#     'default': {
-#         'ENGINE': 'sql_server.pyodbc',
-#         'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
-#         'PORT': '', #'1433',
-#         'NAME': 'HHdev',
-#         'Trusted_Connection': 'yes;',
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
-#             'unicode_results': True,
-#         },
-#     },
-# }
-
-# LAPTOP = {
-#     'default': {
-#         'ENGINE': 'sql_server.pyodbc',
-#         'HOST': '.', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
-#         'PORT': '', #'1433',
-#         'NAME': 'FredTesting',
-#         'Trusted_Connection': 'yes;',
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 13 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
-#             'unicode_results': True,
-#             'options': '-c search_path=mydata'
-#         },
-#     },
-# }
 
 HHSWLDEV02 = {
     'default': {
