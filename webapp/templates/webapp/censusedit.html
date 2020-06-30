@@ -168,9 +168,9 @@ function logout() {
 <tr style="font-weight:bold;background-color:#ECA927" class="tableHeader">	
 	<td>&nbsp;</td>
 	<td>Room</td>
-	<td>Name</td>
+	<td style="width:200px">Name</td>
 	<td width="80px">Resident#</td>
-	<td align="center">Gender</td>
+	<td style="text-align:center;">Gender</td>
 	<td width="80px" align="right">Admit&nbsp;Date</td>
 	<td>Status</td>
 	<td align="center">LOC</td>
@@ -184,20 +184,15 @@ function logout() {
 </thead>
 <tbody id="bedcheck">
 {% for bed in beds %}
-	<tr id="{{bed.id}}" data-changed="No"  {% if bed.ResidentNumber != '' %}
-												class="occupied"
-											{% else %}
-												class="not-occupied"
-											{% endif %}
-											> 
+	<tr id="{{bed.id}}" data-changed="No" class="{{bed.RowClass}}" 	> 
 
 		<td> {{ forloop.counter }} </td> 
 	
 	
-		<td> {{bed.Room}} </td>
+		<td> {{bed.Room}}</td>
 					
 
-		{% if bed.ResidentName != '' %}
+		{% if bed.RowClass == "occupied" %}
 			<td class="name">{{bed.ResidentName}}</td>
 			<td class="mrn"> {{bed.ResidentNumber}}</td>
 			<td class="{{bed.Gender}}"> {{bed.Gender}}</td>
@@ -228,7 +223,7 @@ function logout() {
 			autocomplete="off" onchange="something_changed(this)"/> </td>
 			<td> {{bed.UpdatedByName|default_if_none:""}}</td>
 			<td> {{bed.UpdateDatetime|date:'Y-m-d H:i'}}</td>
-			
+		{% else %}	
 			
 		{% endif %}
 	</tr>

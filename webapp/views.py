@@ -50,15 +50,16 @@ class MyObject:
         text = ', '.join(pairs)
         return text
 
+@never_cache
 def home(request):
     user = request.META['REMOTE_USER']
-    context = dict(user=user, authenticated=request.user.is_authenticated)
+    context = dict(user=user, now=datetime.datetime.now().timestamp())#, authenticated=request.user.is_authenticated)
     return render(request, 'webapp/home.html', context)
         
-     
+@never_cache     
 def logout(request):
     user = request.META['REMOTE_USER']
-    context = dict(user=user, authenticated=request.user.is_authenticated)
+    context = dict(user=user)#, authenticated=request.user.is_authenticated)
     return render(request, 'webapp/logout.html', context)    
 
 def _update_bed(change, user, now):
@@ -71,8 +72,9 @@ def _update_bed(change, user, now):
     errors = bed.save()
     return True
 
-
+@never_cache
 def daily_error_details(request): ###############################################################
+    now=datetime.datetime.now().timestamp()
     user = request.META['REMOTE_USER']
     date = request.GET.get("date", None) 
     TEMPLATE = 'webapp/daily_error_details.html'
@@ -87,11 +89,13 @@ def daily_error_details(request): ##############################################
     errors = InbedBlank | InbedNoReasonBlank
     errors.order_by('unit', 'Room')
     totals = residents.values_list('Unit').annotate(total=Count('Unit')).order_by('Unit')
-    context = dict(date=date, beds=errors, totals=totals, user=user)
+    context = dict(date=date, beds=errors, totals=totals, user=user, now=now)
     return render(request, TEMPLATE, context)
-        
+
+@never_cache        
 def resident_location(request):
     user = request.META['REMOTE_USER']
+    now=datetime.datetime.now().timestamp()
     unit = request.GET.get('unit', DEFAULT_UNIT)
     date = request.GET.get('date', datetime.date.today() )
     beds = logic_census.get_beds(unit, date).exclude(ResidentName=' ')
@@ -100,12 +104,14 @@ def resident_location(request):
                     unit=unit, 
                     units = logic_census.get_units(),
                     beds = beds,
+                    now = now,
                     repdate = date
                     )
     return render(request, 'webapp/resident_location.html', context)
 
 
-@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
+#@cache_control(max_age=0, no_cache=True, no_store=True, must_revalidate=True)
+@never_cache
 def census_edit(request):
     user = request.META['REMOTE_USER']
     if request.method=='GET':
@@ -113,12 +119,17 @@ def census_edit(request):
         unit = request.GET.get('unit', DEFAULT_UNIT)
         beds = logic_census.get_beds(unit)
         for bed in beds:
+            if (bed.ResidentNumber == None or bed.ResidentNumber == ' ' or bed.ResidentNumber==''):
+                bed.RowClass = "not-occupied" #@todo not-occupied
+            else:
+                bed.RowClass = "occupied"
             if bed.CurrentAdmitDate == None: continue #nobody in the bed
             bed.CurrentAdmitDate = bed.CurrentAdmitDate.strftime('%#m/%#d/%Y')
         maxdate = datetime.date.today()
         context = dict(user=user, 
                        unit = unit,
                        locked = locked,
+                       now = datetime.datetime.now(),
                        units=logic_census.get_units(),
                        inbed_choices = INBED_CHOICES, 
                        reason_choices = REASON_CHOICES,
@@ -153,9 +164,10 @@ def save_changes(request):  ###########saves changes to In Bed status page.
     else:
         return HttpResponse('It is too late to make changes')
 
-
+@never_cache
 def monthly_summary(request):
     user = request.META['REMOTE_USER']
+    now=datetime.datetime.now().timestamp()
     units=logic_census.get_units()
     this_month = datetime.date.today().replace(day=1)
     months = [ this_month-relativedelta(months=i) for i in range(12)]
@@ -168,14 +180,16 @@ def monthly_summary(request):
     enddate = datetime.date(year=startdate.year, month=startdate.month, day=ndays)
     Summarizer = logic_census.MonthlySummaryComputer(startdate)
     errors = Summarizer.get_details_by_day_x_unit()
-    context = dict(user=user, months=months, selectedmonth=startdate, units=units, errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
+    context = dict(user=user, months=months, selectedmonth=startdate, units=units, now=now,
+                errors=errors, maxdays=Summarizer.maxdays,  totals=Summarizer.totals)
     return render(request, 'webapp/month_summary.html', context)
     
     
 ###############################################################################################
-
+@never_cache
 def notifications(request):
     user = request.META['REMOTE_USER']
+    now=datetime.datetime.now().timestamp()
     TEMPLATE = 'webapp/notifications.html'
     FORM_CLASS = forms.CensusChangeForm
     if request.method == 'POST':
@@ -199,7 +213,7 @@ def notifications(request):
             patients=forms.CHOICES.Patients
             status_choices=forms.CHOICES.StatusChoices
             form = FORM_CLASS(initial= dict(action=action, user=user))
-            context = dict(user=user, form=form, action=action, patients=patients, status_choices = status_choices)
+            context = dict(user=user, form=form, action=action, patients=patients, status_choices = status_choices, now=now)
             return render(request, TEMPLATE, context)
         
 # def daily_census_report(request):
