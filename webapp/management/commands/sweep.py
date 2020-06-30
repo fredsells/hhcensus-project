@@ -22,30 +22,30 @@ class Command(BaseCommand):
                             type=lambda s: datetime.datetime.strptime(s, '%m/%d/%Y'),
                             default = datetime.date.today())
         parser.add_argument('--days', action= 'store', help = 'number of days for sweep, for testing', default=1, type=int)
-        parser.add_argument('--fakeinput', action= 'store_true', help = 'create fake user entry for testing', default=False)
+        #parser.add_argument('--fakeinput', action= 'store_true', help = 'create fake user entry for testing', default=False)
         
-    def fake_user_input(self, hhdb, nos=0, blanks=0):
-        hhdb.mark_current_inbed_yes()
-        if blanks==0 and nos==0: return 
-        for unit in ['G1', 'G2', 'S2']:
-            beds = models.NightlyBedCheck.objects.filter(Obsolete=0, Unit=unit).order_by('room')
-            for i, bed in enumerate(beds):
-                if i<3: continue
-                print (i, bed)
-                if i < nos:
-                    bed.inbed='No'
-                    bed.reason = random.choice(models.REASON_CHOICES)[0]
-                    bed.updatedby = 'fredtesting'
-                    bed.updatetime=datetime.datetime.now()
-                    bed.save()
-                elif i < nos+blanks:
-                    bed.updatedby = 'fredtesting'
+    # def fake_user_input(self, hhdb, nos=0, blanks=0):
+    #     hhdb.mark_current_inbed_yes()
+    #     if blanks==0 and nos==0: return 
+    #     for unit in ['G1', 'G2', 'S2']:
+    #         beds = models.NightlyBedCheck.objects.filter(Obsolete=0, Unit=unit).order_by('room')
+    #         for i, bed in enumerate(beds):
+    #             if i<3: continue
+    #             print (i, bed)
+    #             if i < nos:
+    #                 bed.inbed='No'
+    #                 bed.reason = random.choice(models.REASON_CHOICES)[0]
+    #                 bed.updatedby = 'fredtesting'
+    #                 bed.updatetime=datetime.datetime.now()
+    #                 bed.save()
+    #             elif i < nos+blanks:
+    #                 bed.updatedby = 'fredtesting'
                     
-                    bed.updatetime=datetime.datetime.now()
-                    bed.inbed = ''
-                    bed.save()
-                else:
-                    break
+    #                 bed.updatetime=datetime.datetime.now()
+    #                 bed.inbed = ''
+    #                 bed.save()
+    #             else:
+    #                 break
                 
     def reformat(self, row, reportdate):
         #print('row', row)
@@ -81,7 +81,7 @@ class Command(BaseCommand):
     
 
     def handle(self, *args, **options):
-        fake_input = options['fakeinput']
+#        fake_input = options['fakeinput']
         firstday =  options['start'] 
         ndays = options['days']
         almost_midnight = ' 11:45:00 PM'
