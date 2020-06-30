@@ -8,7 +8,7 @@ FROM mydata.PatientStayElement AS pse
 	 ) AS last ON last.PatientID=pse.PatientID AND last.StartDate=pse.StartDate
 	 
 	 
-ALTER VIEW mydata.vwAllBedsAndCurrentOccupants AS
+CREATE VIEW mydata.vwAllBedsAndCurrentOccupants AS
  SELECT   bed.BedID
 		, bed.RoomID
 		, bed.UnitID
