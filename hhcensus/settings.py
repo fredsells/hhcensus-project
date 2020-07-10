@@ -14,8 +14,11 @@ import os
 import platform
 import socket
 #print (socket.getfqdn() )
-from . private import hharweb2
+from .private import hharweb2
 from .private import development
+from .private import production
+from .private import common
+
 HHARWEB2_CONNECTION_STRING = hharweb2.CONNECTION_STRING
 
 DATABASES = development.DATABASES
@@ -39,9 +42,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'q2m59ym@%j4e94o5yj+a+h+s_x_^0atc=a-1gy%v9as8_!px=2'
-
+SECRET_KEY = common.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
