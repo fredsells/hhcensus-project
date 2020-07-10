@@ -11,6 +11,8 @@ __pycache__/
 /static/*
 all_letters/docx_templates/
 all_letters/tmpfiles/
+private/
+private/*
 .Python
 env/
 build/

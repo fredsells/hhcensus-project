@@ -3,7 +3,20 @@ Created on Dec 30, 2019
 
 @author: fsells
 '''
-
+UNIT_SUMMARY = '''SELECT 
+		CONVERT(VARCHAR(10), GETDATE(), 101) [Census_Date]
+		,UnitName [Location]
+      , count(*) [Patient_Count]
+	  , CASE 
+			WHEN  DATEPART(HOUR, GETDATE()) BETWEEN 5 and 6 THEN 'Day'
+			WHEN  DATEPART(HOUR, GETDATE()) BETWEEN 13 and 14 THEN 'Eve'
+			WHEN  DATEPART(HOUR, GETDATE()) BETWEEN 21 and 22 THEN 'Eve'
+			ELSE 'XXX'
+		END [Shift]
+  FROM [CensusApps].[mydata].[vwAllBedsAndCurrentOccupants]
+  WHERE PatientID IS NOT NULL and LastStatus='In House'
+  group by UnitName
+  ORDER BY UnitName'''
 
 ALL_BEDS = ''' SELECT * FROM mydata.FacilityUnitRoomBed ORDER BY UnitName, RoomName, BedName   '''
 

@@ -31,7 +31,7 @@ HHSWLDEV02 = (  #this works, even though UID and PWD are defined in ODBC DSN 32 
     r'PWD=Plan-Tree-Scale-Model-Seed-9;'
     )  
 
-
+from django.db import connection
 
 class DatabaseQueryManager(object):
     '''
@@ -43,12 +43,13 @@ class DatabaseQueryManager(object):
 
 
     def __init__(self, conn_str = HHSWLDEV02, DEBUG=False):
-        self.CONNECTION_STRING = conn_str
+#        self.CONNECTION_STRING = conn_str
         self.DEBUG = DEBUG
         self._get_connection()
         
     def _get_connection(self):
-        self.Connection = pyodbc.connect(self.CONNECTION_STRING)
+#        self.Connection = pyodbc.connect(self.CONNECTION_STRING)
+        self.Connection = connection
         cursor = self.Connection.cursor()
         cursor.execute("SELECT 1")  #will raise exception if connection fails
         cursor.close()
@@ -90,6 +91,14 @@ class DatabaseQueryManager(object):
     def get_all_beds_and_current_occupants(self):
         records = self.get_something(SQL.All_BEDS_AND_CURRENT_OCCUPANTS)
         return records
+
+    def get_unit_summary(self):
+        cursor = self.Connection.cursor()
+        cursor.execute(SQL.UNIT_SUMMARY)
+        records = cursor.fetchall() 
+        names = tuple([column[0] for column in cursor.description] )
+        results = [names] + records
+        return results
 
     def get_sagely2(self):
         cursor = self.Connection.cursor()

@@ -14,6 +14,11 @@ import os
 import platform
 import socket
 #print (socket.getfqdn() )
+from . private import hharweb2
+from .private import development
+HHARWEB2_CONNECTION_STRING = hharweb2.CONNECTION_STRING
+
+DATABASES = development.DATABASES
 
 EMAIL_HOST = 'smtp.hebrewhome.org'
 SERVER_EMAIL = 'django.error@hebrewhome.org'
@@ -111,7 +116,9 @@ WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
 
 
-HHSWLDEV02 = {
+
+
+PRODUCTION_DB = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
         'HOST': 'localhost', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
@@ -127,7 +134,8 @@ HHSWLDEV02 = {
     },
 }
 
-DATABASES = HHSWLDEV02
+DATABASES = PRODUCTION_DB
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

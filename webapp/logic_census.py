@@ -7,7 +7,6 @@ web api
 
 import sys, os, datetime, random, calendar, itertools
 
-####################################from dateutil.relativedelta import relativedelta
 from django.db.models import Count, Max, Avg, Sum, F
 from django.db.models.functions import Lower
 from django.db import connection

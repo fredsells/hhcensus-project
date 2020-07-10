@@ -9,32 +9,33 @@ to support both testing and historical analysis.
 '''
 import pyodbc
 import datetime
+
 from django.core.management.base import BaseCommand, CommandError
+from django.db import connection
+from django.conf import settings
+# HHARWEB2 = (r'DSN=copybedchecks32;'
+#             r'UID=copybedchecks;'
+#             r'PWD=RepresentativeDreamAdmireFaint2;'  )
 
-
-HHARWEB2 = (r'DSN=copybedchecks32;'
-            r'UID=copybedchecks;'
-            r'PWD=RepresentativeDreamAdmireFaint2;'  )
-
-POSITIVE_CENSUS_TEST = (r'DRIVER={SQL Server};'
-            r'SERVER=HHARWEB2\SQLEXPRESS;'
-            r'DATABASE=PositiveCensus;'
-            r'Trusted_Connection=yes;'    )
-
-
+# POSITIVE_CENSUS_TEST = (r'DRIVER={SQL Server};'
+#             r'SERVER=HHARWEB2\SQLEXPRESS;'
+#             r'DATABASE=PositiveCensus;'
+#             r'Trusted_Connection=yes;'    )
+#print(dir(settings))
+#HHARWEB2 = settings.HHARWEB2_CONNECTION_STRING
 # LAPTOP = (r'DRIVER={SQL Server};'  no longer doing any work on laptop, too many db connection problesm.
 #                 r'SERVER=.;'
 #                #HHSWLSQLDEV01
 #                 r'DATABASE=FredTesting;'
 #                 r'Trusted_Connection=yes;'    )
 
-HHSWLDEV02 = (  #this works, even though UID and PWD are defined in ODBC DSN 32 bit
-    r'DSN=censusapps32;'
-    r'UID=hhcensus;'
-    r'PWD=Plan-Tree-Scale-Model-Seed-9;'
-    )  
+# HHSWLDEV02 = (  #this works, even though UID and PWD are defined in ODBC DSN 32 bit
+#     r'DSN=censusapps32;'
+#     r'UID=hhcensus;'
+#     r'PWD=Plan-Tree-Scale-Model-Seed-9;'
+#     )  
 
-CONNECTIONS = dict (dev=HHSWLDEV02, prod=None)
+# CONNECTIONS = dict (dev=HHSWLDEV02, prod=None)
 
 ONE_HOUR = datetime.timedelta(hours=1)
 
@@ -74,7 +75,7 @@ def insert_data(Connection, start, end,  data):
                   ,Inbed  ,Reason ,RepDate   ,Comments
                   ,UpdateByID  ,UpdateDatetime  ,CreateDatetime  ,UpdateByName
                     ,Obsolete)   
-                 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                 VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 1)
                  '''
     Cursor.executemany(sql, data)
     Connection.commit()
@@ -82,6 +83,7 @@ def insert_data(Connection, start, end,  data):
 
 def execute(source, destination, startdate, enddate, save):
     data = get_old_data(source, startdate, enddate)
+    print(len(data[0]), data[0])
     if save:
         insert_data(destination, startdate, enddate, data)
         print ('%s records inserted  into target database' % (len(data),))
@@ -108,14 +110,15 @@ class Command(BaseCommand):
         
 
     def handle(self, *args, **options):
-        sourcestring = HHARWEB2
-        targetname = options['target']
-        targetstring = CONNECTIONS[targetname]
+#        sourcestring = HHARWEB2
+#        targetname = options['target']
+#        targetstring = CONNECTIONS[targetname]
         startdate = options['start']
         enddate = options['end']
         save = options['save']
-        source = pyodbc.connect(sourcestring)
-        target = pyodbc.connect(targetstring)
+        source = pyodbc.connect(settings.HHARWEB2_CONNECTION_STRING)
+#        target = pyodbc.connect(targetstring)
+        target = connection # from settings DATABASES
         execute(source, target, startdate, enddate, save)
         print('copy done')
 
