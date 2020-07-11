@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import platform
-import socket
-#print (socket.getfqdn() )
+#import platform
+#import socket
+#print (socket.getfqdn() )  #use this to get server name if needed
 from .private import hharweb2
 from .private import development
 from .private import production
@@ -21,55 +21,58 @@ from .private import common
 
 HHARWEB2_CONNECTION_STRING = hharweb2.CONNECTION_STRING
 
-DATABASES = development.DATABASES
-
 EMAIL_HOST = 'smtp.hebrewhome.org'
 SERVER_EMAIL = 'django.error@hebrewhome.org'
-#EMAIL_PORT = 587  #for secure, use 25 for non secure.
-#default '' EMAIL_HOST_USER = ''
-#default = '' EMAIL_HOST_PASSOWRD = None
-#EMAIL_USE_TLS = True #depends on email provider
-#EMAIL_USE_SSL = False
+
 
 DATE_INPUT_FORMATS = ['%Y-%m-%d'] #'%d-%m-%Y', '%m/%d/%Y', 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-############print(BASE_DIR)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 SECRET_KEY = common.SECRET_KEY
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-TEST_EMAIL_RECIPIENTS =  ['frederick.sells@RiverSpringHealth.org', 'jonathan.clark@RiverSpringHealth.org',
-                                        'antonique.martin@RiverSpringHealth.org']
-ADMINS =   [ ('DjangoAdmin', 'ADMINS@RiverSpringHealth.org'), ]
 
 ALLOWED_HOSTS = ['*'] #todo restrict to RiverSpring domain.
 
-#NOTE: django simple email sender takes a list while more complex Python email modules takes a list.
+#NOTE: django simple email sender takes a text string while more complex Python email modules takes a list.
 # all distro lists are defined as list and converted in sending module if necessary.
 # The django module is not capable of handling attachments, which are needed for Sagely
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False  #True=errors show up on web page; False errors emailed to ADMINS
+PRODUCTION_EMAIL = False
 PRODUCTION = False
 
-if PRODUCTION: 
+if PRODUCTION:
+    BED_STATUS_LOCK_HOUR = 8  #becomes 8:00 am
+    DATABASES = production.DATABASES
+else:
+    BED_STATUS_LOCK_HOUR = 16  #becomes 4:00 pm for testing
+    DATABASES = development.DATABASES
+
+TEST_EMAIL_RECIPIENTS =  [  'frederick.sells@RiverSpringHealth.org', 
+                            'jonathan.clark@RiverSpringHealth.org',
+                            'antonique.martin@RiverSpringHealth.org']
+
+ADMINS =   [ ('DjangoAdmin', 'ADMINS@RiverSpringHealth.org'), ]
+
+
+if PRODUCTION_EMAIL:   #use this flag when testing production system before going live
     EMAIL_SUBJECT_PREFIX = ''  # default='[Django] '
     CENSUS_RECIPIENTS = ['censusnotification@hebrewhome.org']   
     FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
     SAGELY2_DISTRIBUTION_LIST = ['Sagely2@hebrewhome.org']
-    BED_STATUS_LOCK_HOUR = 8  #becomes 8:00 am
-    CensusUpdateReportRecipients = ['CensusUpdateReport@hebrewhome.org']
+    CENSUS_UPDATE_REPORT_RECIPIENTS = ['CensusUpdateReport@hebrewhome.org']
 else:
     SAGELY2_DISTRIBUTION_LIST = TEST_EMAIL_RECIPIENTS
     CENSUS_RECIPIENTS = TEST_EMAIL_RECIPIENTS
     FROM_EMAIL_ADDRESS = 'no-reply@hebrewhome.org'
     EMAIL_SUBJECT_PREFIX = '***TESTING*** '
-    BED_STATUS_LOCK_HOUR = 16  #becomes 4:00 pm for testing
-    CensusUpdateReportRecipients = TEST_EMAIL_RECIPIENTS
+    CENSUS_UPDATE_REPORT_RECIPIENTS = TEST_EMAIL_RECIPIENTS
  
 # Application definition
 
@@ -80,7 +83,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   ########################################################################### 'computed_property',
     'webapp',
     'webapp.templatetags.app_filters',
 ]
@@ -115,60 +117,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hhcensus.wsgi.application'
 
-
-
-
-
-PRODUCTION_DB = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'HOST': 'localhost', # 'HHARSWLSQLDEV01.HHARSWLSQLDEV01',
-        'PORT': '', #'1433',
-        'NAME': 'censusapps',
-        'USER': 'hhcensus',
-        'PASSWORD':'Plan-Tree-Scale-Model-Seed-9',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',  #got from list of drivers via Admin Tools/ODBC
-            'unicode_results': True,
-            'options': '-c search_path=census,mydata'
-        },
-    },
-}
-
-DATABASES = PRODUCTION_DB
-
-
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-# LANGUAGE_CODE = 'en-us'
-# 
-# TIME_ZONE = 'UTC'
-# 
-# USE_I18N = True
-# 
 USE_L10N = False
-# 
-# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

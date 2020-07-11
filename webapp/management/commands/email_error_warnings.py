@@ -2,6 +2,7 @@
 Created on Feb 27, 2020
 The purpose of this module is to send emails to a specified distribution list
 for all residents where the inbed status is blank or is no and the reason is blank.
+It is executed from an external scheduler at predefined times.
 
 @author: fsells
 '''
@@ -9,12 +10,11 @@ for all residents where the inbed status is blank or is no and the reason is bla
 import sys, os, datetime
 
 from django.core.management.base import BaseCommand, CommandError
-
+from django.conf import settings
 
 from webapp.constants import *
 from webapp import logic_census as logic
 from webapp import email_sender
-from django.conf import settings
 
 HTML_WRAPPER = '''<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
                     <h1>CENSUS UPDATE REPORT</h1>
@@ -56,7 +56,7 @@ class Command(BaseCommand):
     def send_email(self, errors):
         subject = '{} CENSUS UPDATE REPORT '.format(settings.EMAIL_SUBJECT_PREFIX)
         body=self.format_email_body(errors)
-        email_sender.email_anything(settings.CensusUpdateReportRecipients, subject, body)
+        email_sender.email_anything(settings.CENSUS_UPDATE_REPORT_RECIPIENTS, subject, body)
 
     def handle(self, *args, **options):
         errors = logic.get_errors() 
